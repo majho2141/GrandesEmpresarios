@@ -1,0 +1,18 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+# No copy needed here as we'll mount the code as a volume
+
+EXPOSE ${FRONTEND_PORT:-3000}
+
+# Environment variables - defaults if not provided
+ENV NODE_ENV=${NODE_ENV:-development}
+ENV WATCHPACK_POLLING=${WATCHPACK_POLLING:-true}
+ENV CHOKIDAR_USEPOLLING=${CHOKIDAR_USEPOLLING:-true}
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8080}
+
+CMD ["npm", "run", "dev"] 

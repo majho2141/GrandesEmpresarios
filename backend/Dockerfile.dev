@@ -1,0 +1,24 @@
+FROM maven:3.9-eclipse-temurin-17-alpine
+
+WORKDIR /app
+
+# Copy only pom.xml first to leverage Docker cache for dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+# No necesitamos copiar mvnw ya que la imagen maven ya tiene mvn instalado
+
+# Keep the container running with dev tools enabled
+EXPOSE ${BACKEND_PORT:-8080}
+EXPOSE ${DEBUG_PORT:-5005}
+
+# Environment variables
+ENV SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-dev}
+ENV DB_HOST=${DB_HOST:-mysql}
+ENV DB_PORT=${DB_PORT:-3306}
+ENV DB_NAME=${DB_NAME:-grandesempresarios}
+ENV DB_USER=${DB_USER:-root}
+ENV DB_PASSWORD=${DB_PASSWORD:-rootpassword}
+
+# Use Spring Boot DevTools for hot reloading - usando forma de shell para permitir la sustitución de variables
+CMD mvn spring-boot:run -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005" 

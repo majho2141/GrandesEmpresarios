@@ -1,0 +1,49 @@
+# Archivos de entorno
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Directorios de dependencias
+/node_modules
+/.pnp
+.pnp.js
+
+# Directorios de construcción
+/build
+/dist
+/.next/
+/out/
+
+# Caché
+.cache/
+.webpack/
+.eslintcache
+
+# Archivos de log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Directorios de coverage
+/coverage/
+
+# Archivos IDE
+/.idea/
+/.vscode/
+*.swp
+*.swo
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Archivos de datos Docker
+data/
+/volumes/ 
