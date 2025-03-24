@@ -2,7 +2,6 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { tokens } from '@/components/tokens'
 
 export default function LoginP() {
     const [formData, setFormData] = useState({
@@ -13,7 +12,6 @@ export default function LoginP() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        // Aquí irá la lógica de login
     }
 
     return (
