@@ -1,17 +1,28 @@
 'use client'
 import { useState } from 'react'
+import { login } from '@/services/authService'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from "next/navigation";
 
 export default function LoginP() {
+
+    const router = useRouter();
+
     const [formData, setFormData] = useState({
         email: '',
         password: '',
         remember: false
     })
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        try {
+            await login(formData.email, formData.password);
+            router.push('/dashboard'); 
+        } catch (error) {
+            console.error("Error en el login", error);
+        }
     }
 
     return (
@@ -24,7 +35,7 @@ export default function LoginP() {
                     height={50}
                     className="mb-6"
                 />
-                
+
                 <h2 className="text-2xl font-semibold text-gray-900 mb-1">
                     Iniciar sesión
                 </h2>
@@ -40,7 +51,7 @@ export default function LoginP() {
                             className="w-full px-3 text-black py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-[#76B947] transition-colors"
                             placeholder="Correo electrónico"
                             value={formData.email}
-                            onChange={(e) => setFormData({...formData, email: e.target.value})}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         />
                         <input
                             type="password"
@@ -48,14 +59,14 @@ export default function LoginP() {
                             className="w-full px-3 text-black py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:border-[#76B947] transition-colors"
                             placeholder="Contraseña"
                             value={formData.password}
-                            onChange={(e) => setFormData({...formData, password: e.target.value})}
+                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         />
                     </div>
                     <div className="text-sm flex justify-center">
-                        <span className="text-gray-600">¿No tienes una cuenta? <Link 
-                                href="/register" className="text-blue-600 hover:text-blue-800">
-                                Regístrate
-                            </Link>
+                        <span className="text-gray-600">¿No tienes una cuenta? <Link
+                            href="/register" className="text-blue-600 hover:text-blue-800">
+                            Regístrate
+                        </Link>
                         </span>
                     </div>
 
@@ -66,13 +77,13 @@ export default function LoginP() {
                                 type="checkbox"
                                 className="h-4 w-4 text-[#76B947] border-gray-200 rounded focus:ring-[#76B947]"
                                 checked={formData.remember}
-                                onChange={(e) => setFormData({...formData, remember: e.target.checked})}
+                                onChange={(e) => setFormData({ ...formData, remember: e.target.checked })}
                             />
                             <label htmlFor="remember" className="ml-2 text-sm text-gray-600">
                                 Recuérdame
                             </label>
                         </div>
-                        
+
                     </div>
 
                     <button

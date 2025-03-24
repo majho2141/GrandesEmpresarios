@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { register } from '@/services/authService'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -11,9 +12,15 @@ export default function RegisterP() {
         acceptTerms: false
     })
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-    }
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await register(formData.fullName, formData.email, formData.password);
+            alert("Registro exitoso");
+        } catch (error) {
+            console.error("Error en el registro", error);
+        }
+    };    
 
     return (
         <div className="w-full">
