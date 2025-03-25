@@ -50,7 +50,7 @@ public class AuthController {
             
             if (jwtService.isTokenValid(token, userDetails)) {
                 Map<String, Object> response = new HashMap<>();
-                response.put("email", userEmail);
+                response.put("userId", jwtService.extractUserId(token));
                 response.put("valid", true);
                 return ResponseEntity.ok(response);
             }

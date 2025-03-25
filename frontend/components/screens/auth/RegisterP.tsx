@@ -90,13 +90,15 @@ export default function RegisterP() {
                         </div>
                         
                     </div>
-
+                    <br></br>
+                    <Link href="/login">
                     <button
                         type="submit"
                         className="w-full bg-[#76B947] text-white py-2 rounded-md text-sm font-medium hover:bg-[#5a8c35] transition-colors"
                     >
                         Regístrate
                     </button>
+                    </Link>
 
                     <div className="relative my-6">
                         <div className="absolute inset-0 flex items-center">
