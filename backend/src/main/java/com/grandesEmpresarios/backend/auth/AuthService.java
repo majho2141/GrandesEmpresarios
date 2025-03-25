@@ -5,11 +5,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.grandesEmpresarios.backend.jwt.JwtService;
 import com.grandesEmpresarios.backend.user.Role;
 import com.grandesEmpresarios.backend.user.User;
 import com.grandesEmpresarios.backend.user.UserRepository;
+import com.grandesEmpresarios.backend.validation.EmailValidator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,17 +24,24 @@ public class AuthService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final EmailValidator emailValidator;
 
     public AuthResponse login(LoginRequest request) {
+        String normalizedEmail = emailValidator.normalizeEmail(request.getEmail());
+        
+        if (!emailValidator.isValidEmail(normalizedEmail)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email inválido");
+        }
+
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
-                request.getEmail(),
+                normalizedEmail,
                 request.getPassword()
             )
         );
 
-        UserDetails user = userRepository.findByUsername(request.getEmail())
-        .orElseThrow();
+        UserDetails user = userRepository.findByEmail(normalizedEmail)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
         
         String token = jwtService.getToken(user);
 
@@ -41,10 +51,20 @@ public class AuthService {
     }
 
     public AuthResponse register(RegisterRequest request) {
+        String normalizedEmail = emailValidator.normalizeEmail(request.getEmail());
+        
+        if (!emailValidator.isValidEmail(normalizedEmail)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email inválido");
+        }
+
+        if (userRepository.findByEmail(normalizedEmail).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "El email ya está registrado");
+        }
+
         User user = User.builder()
-            .username(request.getUsername())
+            .username(normalizedEmail)
             .password(passwordEncoder.encode(request.getPassword()))
-            .email(request.getEmail())
+            .email(normalizedEmail)
             .role(Role.USER)
             .enabled(true)
             .build();

@@ -15,6 +15,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
+import com.grandesEmpresarios.backend.user.User;
+
 @Service
 public class JwtService {
 
@@ -37,6 +39,10 @@ public class JwtService {
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public Integer extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("userId", Integer.class));
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -76,9 +82,14 @@ public class JwtService {
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>(extraClaims);
+        if (userDetails instanceof User) {
+            claims.put("userId", ((User) userDetails).getId());
+        }
+        
         return Jwts
                 .builder()
-                .setClaims(extraClaims)
+                .setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24)) // 24 horas
