@@ -1,24 +1,29 @@
-FROM maven:3.9-eclipse-temurin-17-alpine
+FROM python:3.11
+
+# Instalar dependencias del sistema para evitar problemas con bibliotecas nativas
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    gcc \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /app
 
 WORKDIR /app
 
-# Copy only pom.xml first to leverage Docker cache for dependencies
-COPY pom.xml .
-RUN mvn dependency:go-offline
+COPY requirements.txt .
 
-# No necesitamos copiar mvnw ya que la imagen maven ya tiene mvn instalado
+# Instalar PyJWT y bcrypt explícitamente primero
+RUN pip install --no-cache-dir PyJWT==2.10.0 && \
+    pip install --no-cache-dir bcrypt==4.2.0 && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Keep the container running with dev tools enabled
-EXPOSE ${BACKEND_PORT:-8080}
-EXPOSE ${DEBUG_PORT:-5005}
+ENV PYTHONPATH=/app
 
-# Environment variables
-ENV SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-dev}
-ENV DB_HOST=${DB_HOST:-mysql}
-ENV DB_PORT=${DB_PORT:-3306}
-ENV DB_NAME=${DB_NAME:-grandesempresarios}
-ENV DB_USER=${DB_USER:-root}
-ENV DB_PASSWORD=${DB_PASSWORD:-rootpassword}
+COPY . /app
 
-# Use Spring Boot DevTools for hot reloading - usando forma de shell para permitir la sustitución de variables
-CMD mvn spring-boot:run -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005" 
+EXPOSE 8000
+
+# Ejecutar directamente los comandos en lugar de usar el script
+CMD ["bash", "-c", "python /app/src/config/backend_pre_start.py 2>/dev/null || echo 'No pre_start'; python /app/src/config/initial_data.py 2>/dev/null || echo 'No initial_data'; exec uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload"]
