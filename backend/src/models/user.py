@@ -1,35 +1,54 @@
-from pydantic import EmailStr, BaseModel
-from sqlmodel import Field, Relationship, SQLModel
 from typing import Optional
-from datetime import datetime
+from pydantic import EmailStr
+from sqlmodel import Field, SQLModel, Relationship
+from .role import Role, RoleRead
+from .enterprise import Enterprise, EnterpriseRead, EnterpriseCreate
 
-# Shared properties
-class User(SQLModel, table=True):
-    email: EmailStr = Field(primary_key=True, index=True, max_length=255)
-    is_active: bool = True
-    is_superuser: bool = False
-    full_name: str | None = Field(default=None, max_length=255)
-    password: str = Field(max_length=255)  # Almacena la contraseña hasheada
+class UserBase(SQLModel):
+    name: str = Field(max_length=45)
+    email: EmailStr = Field(unique=True, index=True)
+    phone_number: str = Field(max_length=20)
+    document_id: str = Field(max_length=20)
+    address: str = Field(max_length=255)
+    enterprise_id: Optional[int] = Field(default=None, foreign_key="enterprise.id")
+    role_id: Optional[int] = Field(default=None, foreign_key="role.id", nullable=True)
+    document_verified: bool = Field(default=False)
+    is_active: bool = Field(default=False)
 
-# Modelo para crear o actualizar usuarios
-class UserCreate(BaseModel):
+class UserCreate(UserBase):
+    password: str
+    enterprise: Optional[EnterpriseCreate] = None
+
+class UserRead(UserBase):
+    id: int
+
+class UserReadWithDetails(UserRead):
+    role: Optional[RoleRead] = None
+    enterprise: Optional[EnterpriseRead] = None
+
+class UserUpdate(SQLModel):
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone_number: Optional[str] = None
+    address: Optional[str] = None
+    password: Optional[str] = None
+    role_id: Optional[int] = None
+    document_verified: Optional[bool] = None
+    is_active: Optional[bool] = None
+
+# Modelo para autenticación
+class UserLogin(SQLModel):
     email: EmailStr
-    full_name: str | None = None
-    is_active: bool = False
-    is_superuser: bool = False
-    password: str  # Contraseña en texto plano
+    password: str
 
-# Modelo para respuestas (sin exponer la contraseña)
-class UserResponse(BaseModel):
-    email: EmailStr
-    full_name: str | None = None
-    is_active: bool
-    is_superuser: bool
+# Modelo para token
+class Token(SQLModel):
+    access_token: str
+    token_type: str
 
-class VerificationCode(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    email: str = Field(index=True)
-    code: str
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    is_active: bool = True
+class User(UserBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    password: str
+    role: Optional[Role] = Relationship(back_populates="users")
+    enterprise: Optional[Enterprise] = Relationship()
 

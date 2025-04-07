@@ -1,117 +1,166 @@
-from typing import Any
-import random
+from typing import Optional
+from sqlmodel import Session, select
+from sqlalchemy.orm import selectinload
 from datetime import datetime, timedelta
-
-from sqlmodel import Session, select, delete, col
+import random
 
 from src.config.security import get_password_hash, verify_password
-
-from src.models.user import User, UserCreate, UserResponse, VerificationCode
+from src.models.user import User, UserCreate, UserUpdate
+from src.models.role import Role
+from src.models.verification_code import VerificationCode
 
 def create_user(*, session: Session, user_create: UserCreate) -> User:
+    """
+    Crear un nuevo usuario.
+    El primer usuario registrado será ADMIN.
+    Los demás serán EMPLOYEE si tienen empresa o CLIENT si no tienen.
+    """
     # Verificar si es el primer usuario
     statement = select(User)
     existing_users = session.exec(statement).all()
     
-    # Si no hay usuarios, este será superusuario
+    # Si no hay usuarios, será el primer usuario (ADMIN)
     if not existing_users:
-        user_create.is_superuser = True
+        # Buscar rol ADMIN
+        admin_role = session.exec(select(Role).where(Role.name == "ADMIN")).first()
+        if not admin_role:
+            raise ValueError("El rol ADMIN no existe. Verifica la inicialización de la base de datos.")
+        
+        # Asignar rol ADMIN y activar la cuenta
+        user_create.role_id = admin_role.id
+        user_create.is_active = True  # El admin se crea activo por defecto
+        
+        # Crear usuario con contraseña hasheada
+        db_obj = User(
+            **user_create.model_dump(exclude={"password", "enterprise"}),
+            password=get_password_hash(user_create.password)
+        )
+        
+        session.add(db_obj)
+        session.commit()
+        session.refresh(db_obj)
+        return db_obj
     
-    # Crear un objeto de usuario con la contraseña hasheada
+    # Si no es el primer usuario, proceder con la lógica normal
+    # Crear usuario con contraseña hasheada
     db_obj = User(
-        email=user_create.email,
-        full_name=user_create.full_name,
-        is_active=user_create.is_active,
-        is_superuser=user_create.is_superuser,
-        password=get_password_hash(user_create.password)  # Contraseña hasheada
+        **user_create.model_dump(exclude={"password", "enterprise"}),
+        password=get_password_hash(user_create.password)
     )
     
-    # Añadir usuario a la base de datos
     session.add(db_obj)
     session.commit()
     session.refresh(db_obj)
-    
     return db_obj
 
-def get_user_by_email(*, session: Session, email: str) -> User | None:
-    statement = select(User).where(User.email == email)
-    session_user = session.exec(statement).first()
-    return session_user
+def get_user_by_email(*, session: Session, email: str) -> Optional[User]:
+    return session.exec(select(User).where(User.email == email)).first()
 
-def authenticate_user(*, session: Session, email: str, password: str) -> User | None:
+def get_user_by_document(*, session: Session, document_id: str) -> Optional[User]:
+    return session.exec(select(User).where(User.document_id == document_id)).first()
+
+def authenticate_user(*, session: Session, email: str, password: str) -> Optional[User]:
     user = get_user_by_email(session=session, email=email)
     if not user:
         return None
-    if not verify_password(password, user.password):  # Verifica contra contraseña hasheada
+    if not verify_password(password, user.password):
         return None
     return user
 
-def get_all_users(*, session: Session) -> list[User]:
-    statement = select(User)
-    users = session.exec(statement).all()
-    return users
+def get_all_users(session: Session) -> list[User]:
+    """
+    Obtener todos los usuarios del sistema con sus roles y empresas
+    """
+    statement = select(User).options(selectinload(User.role), selectinload(User.enterprise))
+    result = session.exec(statement)
+    return list(result.all() or [])
 
-def delete_user(*, session: Session, email: str) -> None:
-    statement = delete(User).where(User.email == email)
-    session.exec(statement)
+def delete_user(*, session: Session, document_id: str) -> bool:
+    user = get_user_by_document(session=session, document_id=document_id)
+    if not user:
+        return False
+    
+    session.delete(user)
     session.commit()
+    return True
 
-def update_user(*, session: Session, email: str, user_update: UserCreate) -> User:
-    statement = select(User).where(User.email == email)
-    db_obj = session.exec(statement).first()
+def update_user(
+    *, session: Session, document_id: str, user_update: UserUpdate
+) -> Optional[User]:
+    db_obj = get_user_by_document(session=session, document_id=document_id)
     if not db_obj:
-        raise ValueError("User not found")
+        return None
     
-    # Actualizar los valores del usuario (excepto email que es clave primaria)
-    db_obj.full_name = user_update.full_name
-    db_obj.is_active = user_update.is_active
-    db_obj.is_superuser = user_update.is_superuser
+    update_data = user_update.dict(exclude_unset=True)
+    if "password" in update_data:
+        update_data["password"] = get_password_hash(update_data["password"])
     
-    # Actualizar contraseña si se proporcionó
-    if user_update.password:
-        db_obj.password = get_password_hash(user_update.password)
+    for field, value in update_data.items():
+        setattr(db_obj, field, value)
     
-    # Guardar cambios
+    session.add(db_obj)
     session.commit()
     session.refresh(db_obj)
-    
     return db_obj
 
 def generate_verification_code(*, session: Session, email: str) -> str:
-    # Desactivar códigos anteriores
-    statement = select(VerificationCode).where(VerificationCode.email == email)
-    old_codes = session.exec(statement).all()
-    for code in old_codes:
-        code.is_active = False
-        session.add(code)
-    
-    # Generar nuevo código
+    # Generar código de 6 dígitos
     code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
     
-    # Guardar nuevo código
-    db_code = VerificationCode(email=email, code=code)
-    session.add(db_code)
+    # Desactivar códigos anteriores
+    statement = select(VerificationCode).where(
+        VerificationCode.email == email,
+        VerificationCode.is_active == True
+    )
+    old_codes = session.exec(statement).all()
+    for old_code in old_codes:
+        old_code.is_active = False
+        session.add(old_code)
+    
+    # Crear nuevo código
+    verification_code = VerificationCode(
+        email=email,
+        code=code,
+        is_active=True
+    )
+    session.add(verification_code)
     session.commit()
-    session.refresh(db_code)
     
     return code
 
 def verify_code(*, session: Session, email: str, code: str) -> bool:
+    # Buscar código activo
     statement = select(VerificationCode).where(
         VerificationCode.email == email,
         VerificationCode.code == code,
         VerificationCode.is_active == True,
         VerificationCode.created_at >= datetime.utcnow() - timedelta(minutes=15)
     )
-    db_code = session.exec(statement).first()
+    verification_code = session.exec(statement).first()
     
-    if not db_code:
+    if not verification_code:
         return False
     
     # Desactivar el código después de usarlo
-    db_code.is_active = False
-    session.add(db_code)
+    verification_code.is_active = False
+    session.add(verification_code)
     session.commit()
     
     return True
+
+def get_users_by_role(*, session: Session, role_name: str) -> list[User]:
+    """
+    Obtener todos los usuarios por nombre de rol
+    """
+    statement = select(User).join(Role).where(Role.name == role_name)
+    return session.exec(statement).all()
+
+def verify_user_password(*, session: Session, user_id: str, password: str) -> bool:
+    """
+    Verificar la contraseña de un usuario
+    """
+    user = get_user_by_document(session=session, document_id=user_id)
+    if not user:
+        return False
+    return verify_password(password, user.password)
     

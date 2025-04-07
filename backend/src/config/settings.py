@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env", env_ignore_empty=True, extra="ignore"
     )
-    PROJECT_NAME: str = "grandesEmpresarios"
+    PROJECT_NAME: str = "EMPRE TECH"
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)
     # 60 minutes * 24 hours * 8 days = 8 days
@@ -57,7 +57,7 @@ class Settings(BaseSettings):
 
 
     # Server settings
-    SERVER_HOST: str = "http://localhost:8000"
+    SERVER_HOST: str = "http://localhost:8080"
     
     # SMTP settings
     SMTP_PASSWORD: str | None = None

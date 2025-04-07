@@ -33,3 +33,23 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
+
+
+def create_password_reset_token(user_id: str) -> str:
+    expire = datetime.utcnow() + timedelta(hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
+    to_encode = {
+        "exp": expire,
+        "sub": str(user_id),
+        "type": "password_reset"
+    }
+    return pyjwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
+
+
+def verify_password_reset_token(token: str) -> str | None:
+    try:
+        decoded_token = pyjwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
+        if decoded_token["type"] != "password_reset":
+            return None
+        return decoded_token["sub"]
+    except pyjwt.PyJWTError:
+        return None
