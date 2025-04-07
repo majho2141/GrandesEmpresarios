@@ -13,42 +13,33 @@ import { useAlert } from '@/context/AlertContext';
 import { authService } from '@/services/api/auth.service';
 
 const registerSchema = z.object({
-  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-  apellido: z.string().min(2, 'El apellido debe tener al menos 2 caracteres'),
+  name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
   email: z.string().email('Email inválido'),
-  cedula: z.string().min(6, 'La cédula debe tener al menos 6 caracteres'),
-  telefono: z.string().min(10, 'El teléfono debe tener al menos 10 caracteres'),
+  phone_number: z.string().min(10, 'El teléfono debe tener al menos 10 caracteres'),
+  document_id: z.string().min(6, 'El documento debe tener al menos 6 caracteres'),
   password: z.string()
     .min(8, 'La contraseña debe tener al menos 8 caracteres')
     .regex(/[A-Z]/, 'La contraseña debe tener al menos una mayúscula')
     .regex(/[0-9]/, 'La contraseña debe tener al menos un número')
     .regex(/[^A-Za-z0-9]/, 'La contraseña debe tener al menos un carácter especial'),
   confirmPassword: z.string(),
-  tipoUsuario: z.enum(['cliente', 'emprendedor']),
-  aceptaTerminos: z.boolean().refine((val) => val === true, {
+  userType: z.enum(['client', 'entrepreneur']),
+  acceptTerms: z.boolean().refine((val) => val === true, {
     message: 'Debes aceptar los términos y condiciones'
   }),
-  emprendimiento: z.object({
-    nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-    descripcion: z.string().min(10, 'La descripción debe tener al menos 10 caracteres'),
-    nit: z.string().min(9, 'El NIT debe tener al menos 9 caracteres'),
-    direccion: z.string().min(5, 'La dirección debe tener al menos 5 caracteres'),
+  enterprise: z.object({
+    name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
+    NIT: z.string().min(9, 'El NIT debe tener al menos 9 caracteres'),
+    email: z.string().email('Email inválido'),
+    phone_number: z.string().min(10, 'El teléfono debe tener al menos 10 caracteres'),
+    currency: z.string().min(3, 'La moneda debe tener al menos 3 caracteres'),
+    description: z.string().min(10, 'La descripción debe tener al menos 10 caracteres'),
+    address: z.string().min(5, 'La dirección debe tener al menos 5 caracteres'),
   }).optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Las contraseñas no coinciden',
   path: ['confirmPassword'],
-}).refine(
-  (data) => {
-    if (data.tipoUsuario === 'emprendedor') {
-      return !!data.emprendimiento;
-    }
-    return true;
-  },
-  {
-    message: "La información del emprendimiento es requerida",
-    path: ["emprendimiento"],
-  }
-);
+});
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -59,7 +50,7 @@ interface PasswordRequirement {
 }
 
 export default function RegisterPage() {
-  const [userType, setUserType] = useState<'cliente' | 'emprendedor'>('cliente');
+  const [userType, setUserType] = useState<'client' | 'entrepreneur'>('client');
   const [password, setPassword] = useState('');
   const [requirements, setRequirements] = useState<PasswordRequirement[]>([
     { regex: /.{8,}/, text: 'Mínimo 8 caracteres', met: false },
@@ -79,8 +70,8 @@ export default function RegisterPage() {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      tipoUsuario: 'cliente' as const,
-      aceptaTerminos: false,
+      userType: 'client' as const,
+      acceptTerms: false,
     },
   });
 
@@ -94,7 +85,17 @@ export default function RegisterPage() {
 
   const onSubmit = handleSubmit(async (data: RegisterFormData) => {
     try {
-      await authService.register(data);
+      const registerData = {
+        name: data.name,
+        email: data.email,
+        phone_number: data.phone_number,
+        document_id: data.document_id,
+        address: "No especificada", // Campo requerido por la API pero no usado en el frontend
+        password: data.password,
+        enterprise: data.userType === 'entrepreneur' ? data.enterprise : undefined
+      };
+
+      await authService.register(registerData);
       showAlert('success', '¡Registro exitoso! Por favor, verifica tu correo electrónico.');
       router.push(`/auth/verify?email=${data.email}`);
     } catch (error) {
@@ -103,9 +104,9 @@ export default function RegisterPage() {
     }
   });
 
-  const handleUserTypeChange = (type: 'cliente' | 'emprendedor') => {
+  const handleUserTypeChange = (type: 'client' | 'entrepreneur') => {
     setUserType(type);
-    setValue('tipoUsuario', type);
+    setValue('userType', type);
   };
 
   const handleGoogleRegister = async () => {
@@ -147,9 +148,9 @@ export default function RegisterPage() {
         <div className="flex justify-center space-x-4 mb-8">
           <Button
             type="button"
-            onClick={() => handleUserTypeChange('cliente')}
+            onClick={() => handleUserTypeChange('client')}
             className={`px-6 py-2 rounded-lg font-montserrat transition-all duration-300 ${
-              userType === 'cliente'
+              userType === 'client'
                 ? 'bg-[#048BA8] text-white shadow-md'
                 : 'bg-white text-[#2E4057] border-2 border-[#E1E1E8] hover:border-[#048BA8]'
             }`}
@@ -158,9 +159,9 @@ export default function RegisterPage() {
           </Button>
           <Button
             type="button"
-            onClick={() => handleUserTypeChange('emprendedor')}
+            onClick={() => handleUserTypeChange('entrepreneur')}
             className={`px-6 py-2 rounded-lg font-montserrat transition-all duration-300 ${
-              userType === 'emprendedor'
+              userType === 'entrepreneur'
                 ? 'bg-[#048BA8] text-white shadow-md'
                 : 'bg-white text-[#2E4057] border-2 border-[#E1E1E8] hover:border-[#048BA8]'
             }`}
@@ -172,68 +173,55 @@ export default function RegisterPage() {
         <form onSubmit={onSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="nombre" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
+              <label htmlFor="name" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
                 Nombre
               </label>
               <Input
-                id="nombre"
+                id="name"
                 type="text"
-                {...register('nombre')}
-                error={errors.nombre?.message}
+                {...register('name')}
+                error={errors.name?.message}
                 className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057]"
               />
             </div>
 
             <div>
-              <label htmlFor="apellido" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
-                Apellido
+              <label htmlFor="email" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
+                Correo electrónico
               </label>
               <Input
-                id="apellido"
-                type="text"
-                {...register('apellido')}
-                error={errors.apellido?.message}
+                id="email"
+                type="email"
+                {...register('email')}
+                error={errors.email?.message}
                 className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057]"
               />
             </div>
-          </div>
-
-          <div>
-            <label htmlFor="email" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
-              Correo electrónico
-            </label>
-            <Input
-              id="email"
-              type="email"
-              {...register('email')}
-              error={errors.email?.message}
-              className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057]"
-            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="cedula" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
-                Cédula
+              <label htmlFor="phone_number" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
+                Teléfono
               </label>
               <Input
-                id="cedula"
-                type="text"
-                {...register('cedula')}
-                error={errors.cedula?.message}
+                id="phone_number"
+                type="tel"
+                {...register('phone_number')}
+                error={errors.phone_number?.message}
                 className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057]"
               />
             </div>
 
             <div>
-              <label htmlFor="telefono" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
-                Teléfono
+              <label htmlFor="document_id" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
+                Cédula
               </label>
               <Input
-                id="telefono"
-                type="tel"
-                {...register('telefono')}
-                error={errors.telefono?.message}
+                id="document_id"
+                type="text"
+                {...register('document_id')}
+                error={errors.document_id?.message}
                 className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057]"
               />
             </div>
@@ -300,64 +288,64 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {userType === 'emprendedor' && (
+          {userType === 'entrepreneur' && (
             <div className="space-y-6 border-t border-[#E1E1E8] pt-6">
               <h3 className="text-xl font-montserrat font-semibold text-[#2E4057] mb-4">
                 Información del Emprendimiento
               </h3>
               
               <div>
-                <label htmlFor="emprendimiento.nombre" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
+                <label htmlFor="enterprise.name" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
                   Nombre del Emprendimiento
                 </label>
                 <Input
-                  id="emprendimiento.nombre"
+                  id="enterprise.name"
                   type="text"
-                  {...register('emprendimiento.nombre')}
-                  error={errors.emprendimiento?.nombre?.message}
+                  {...register('enterprise.name')}
+                  error={errors.enterprise?.name?.message}
                   className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057]"
                 />
               </div>
 
               <div>
-                <label htmlFor="emprendimiento.descripcion" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
+                <label htmlFor="enterprise.description" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
                   Descripción
                 </label>
                 <textarea
-                  id="emprendimiento.descripcion"
-                  {...register('emprendimiento.descripcion')}
+                  id="enterprise.description"
+                  {...register('enterprise.description')}
                   className={`w-full min-h-[100px] p-3 rounded-lg font-opensans resize-y border-[#E1E1E8] text-[#2E4057]
-                    ${errors.emprendimiento?.descripcion ? 'border-red-500' : 'border'}
+                    ${errors.enterprise?.description ? 'border-red-500' : 'border'}
                     focus:outline-none focus:ring-2 focus:ring-[#048BA8]/20 focus:border-[#048BA8]`}
                 />
-                {errors.emprendimiento?.descripcion && (
-                  <p className="mt-1 text-sm text-red-500">{errors.emprendimiento.descripcion.message}</p>
+                {errors.enterprise?.description && (
+                  <p className="mt-1 text-sm text-red-500">{errors.enterprise.description.message}</p>
                 )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="emprendimiento.nit" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
+                  <label htmlFor="enterprise.NIT" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
                     NIT
                   </label>
                   <Input
-                    id="emprendimiento.nit"
+                    id="enterprise.NIT"
                     type="text"
-                    {...register('emprendimiento.nit')}
-                    error={errors.emprendimiento?.nit?.message}
+                    {...register('enterprise.NIT')}
+                    error={errors.enterprise?.NIT?.message}
                     className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057]"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="emprendimiento.direccion" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
+                  <label htmlFor="enterprise.address" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
                     Dirección
                   </label>
                   <Input
-                    id="emprendimiento.direccion"
+                    id="enterprise.address"
                     type="text"
-                    {...register('emprendimiento.direccion')}
-                    error={errors.emprendimiento?.direccion?.message}
+                    {...register('enterprise.address')}
+                    error={errors.enterprise?.address?.message}
                     className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057]"
                   />
                 </div>
@@ -368,18 +356,18 @@ export default function RegisterPage() {
           <div className="flex items-center">
             <input
               type="checkbox"
-              id="aceptaTerminos"
-              {...register('aceptaTerminos')}
+              id="acceptTerms"
+              {...register('acceptTerms')}
               className="h-4 w-4 text-[#048BA8] border-[#E1E1E8] rounded focus:ring-[#048BA8]"
             />
-            <label htmlFor="aceptaTerminos" className="ml-2 block text-sm font-opensans text-[#2E4057]/90">
+            <label htmlFor="acceptTerms" className="ml-2 block text-sm font-opensans text-[#2E4057]/90">
               Acepto los{' '}
               <Link href="/terminos-y-condiciones" className="text-[#048BA8] hover:text-[#048BA8]/80 font-semibold">
                 términos y condiciones
               </Link>
             </label>
-            {errors.aceptaTerminos && (
-              <p className="mt-1 text-sm text-red-500">{errors.aceptaTerminos.message}</p>
+            {errors.acceptTerms && (
+              <p className="mt-1 text-sm text-red-500">{errors.acceptTerms.message}</p>
             )}
           </div>
 

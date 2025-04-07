@@ -7,7 +7,7 @@ import {
   ReactNode,
 } from 'react';
 import { useRouter } from 'next/navigation';
-import { authApi } from '@/lib/api/auth';
+import { authService } from '@/services/api/auth.service';
 import { AuthState, LoginCredentials, RegisterCredentials, User } from '@/types/auth';
 
 interface AuthContextType extends AuthState {
@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const { user } = await authApi.getCurrentUser();
+      const { user } = await authService.getCurrentUser();
       setState({
         user,
         isLoading: false,
@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (credentials: LoginCredentials) => {
     try {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
-      const { user, token } = await authApi.login(credentials);
+      const { user, token } = await authService.login(credentials);
       localStorage.setItem('token', token);
       setState({
         user,
@@ -83,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (credentials: RegisterCredentials) => {
     try {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
-      await authApi.register(credentials);
+      await authService.register(credentials);
       setState((prev) => ({ ...prev, isLoading: false }));
       router.push('/verify-email');
     } catch (error) {
@@ -98,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       setState((prev) => ({ ...prev, isLoading: true }));
-      await authApi.logout();
+      await authService.logout();
       localStorage.removeItem('token');
       setState({
         user: null,
@@ -119,7 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginWithGoogle = async (token: string) => {
     try {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
-      const { user, token: authToken } = await authApi.loginWithGoogle(token);
+      const { user, token: authToken } = await authService.loginWithGoogle(token);
       localStorage.setItem('token', authToken);
       setState({
         user,

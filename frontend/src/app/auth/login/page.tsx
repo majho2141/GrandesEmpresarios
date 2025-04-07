@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -11,9 +12,10 @@ import { Button } from '@/components/ui/Button';
 import { useAlert } from '@/context/AlertContext';
 import { useAuthStore } from '@/store/useAuthStore';
 import { authService } from '@/services/api/auth.service';
+import { Alert } from '@/components/ui/Alert';
 
 const loginSchema = z.object({
-  email: z.string().email('Ingresa un correo electrónico válido'),
+  email: z.string().email('Correo electrónico inválido'),
   password: z.string().min(1, 'La contraseña es requerida'),
 });
 
@@ -22,7 +24,9 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const router = useRouter();
   const { showAlert } = useAlert();
-  const { setUser, setTokens } = useAuthStore();
+  const { setUser, setToken } = useAuthStore();
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
@@ -30,19 +34,40 @@ export default function LoginPage() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: ''
+    },
+    mode: 'onBlur',
+    reValidateMode: 'onChange'
   });
 
   const onSubmit = async (data: LoginFormData) => {
+    setIsLoading(true);
+    
     try {
       const response = await authService.login(data.email, data.password);
-      setUser(response.user);
-      setTokens(response.token, response.refreshToken);
+      // Guardamos el token
+      localStorage.setItem('token', response.access_token);
+      // Configuramos el token en el estado global
+      setToken(response.access_token);
+      
+      // Obtenemos la información del usuario
+      const userProfile = await authService.getCurrentUser();
+      // Actualizamos el estado global con la información del usuario
+      setUser(userProfile);
+      
       showAlert('success', '¡Inicio de sesión exitoso!');
-      router.push('/dashboard'); // O la ruta que corresponda según el rol
+      router.push('/profile'); // Redirigimos al perfil
     } catch (error) {
+      // Mostrar el mensaje de error
       showAlert('error', 'Credenciales inválidas. Por favor, intenta nuevamente.');
       console.error('Error al iniciar sesión:', error);
+    } finally {
+      setIsLoading(false);
     }
+    
+    // No devolvemos nada para evitar cualquier comportamiento predeterminado adicional
   };
 
   const handleGoogleLogin = async () => {
@@ -82,7 +107,20 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
+        {error && (
+          <div className="mt-4 p-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg">
+            {error}
+          </div>
+        )}
+
+        <form 
+          className="mt-8 space-y-6" 
+          onSubmit={(e) => {
+            e.preventDefault(); // Previene explícitamente la recarga
+            handleSubmit(onSubmit)(e);
+          }} 
+          noValidate
+        >
           <div>
             <label htmlFor="email" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
               Correo electrónico
@@ -121,12 +159,16 @@ export default function LoginPage() {
           </div>
 
           <Button 
-            type="submit" 
+            type="button" 
             fullWidth 
-            disabled={isSubmitting}
+            onClick={(e) => {
+              e.preventDefault();
+              handleSubmit(onSubmit)(e);
+            }}
+            disabled={isLoading}
             className="bg-[#F18F01] hover:bg-[#F18F01]/90 text-white font-semibold py-3 transition-all duration-300 hover:shadow-lg"
           >
-            {isSubmitting ? 'Iniciando sesión...' : 'Iniciar sesión'}
+            {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
           </Button>
 
           <div className="relative">
@@ -145,7 +187,7 @@ export default function LoginPage() {
             variant="outline"
             fullWidth
             onClick={handleGoogleLogin}
-            disabled={isSubmitting}
+            disabled={isLoading}
             className="bg-white border-[#E1E1E8] text-[#2E4057] font-semibold py-3 transition-all duration-300 hover:bg-white hover:border-[#E1E1E8]"
           >
             <svg 

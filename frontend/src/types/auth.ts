@@ -1,51 +1,48 @@
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: 'client' | 'entrepreneur';
-  isVerified: boolean;
-}
-
-export interface AuthState {
-  user: User | null;
-  isLoading: boolean;
-  error: string | null;
-  isAuthenticated: boolean;
-}
+import { UserResponse } from '@/services/api/auth.service';
 
 export interface LoginCredentials {
   email: string;
   password: string;
 }
 
-export interface RegisterCredentials {
-  email: string;
-  password: string;
+export interface Enterprise {
   name: string;
-  role: 'client' | 'entrepreneur';
+  NIT: string;
+  email: string;
+  phone_number: string;
+  currency: string;
+  description: string;
+  address: string;
 }
 
-export interface EntrepreneurInfo {
-  companyName: string;
-  description: string;
-  phone: string;
+export interface RegisterCredentials {
+  name: string;
+  email: string;
+  phone_number: string;
+  document_id: string;
   address: string;
-  nit: string;
+  password: string;
+  enterprise?: Enterprise;
 }
 
 export interface VerificationData {
-  code: string;
-  email: string;
+  token: string;
 }
 
 export interface PasswordResetRequest {
   email: string;
-  documentId: string;
 }
 
 export interface PasswordReset {
-  email: string;
-  code: string;
-  newPassword: string;
-  confirmPassword: string;
+  token: string;
+  new_password: string;
+}
+
+export type User = UserResponse;
+
+export interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
 } 

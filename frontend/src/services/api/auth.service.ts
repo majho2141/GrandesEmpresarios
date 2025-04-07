@@ -1,52 +1,73 @@
 import api from './axios';
 import { AUTH_ENDPOINTS } from '@/constants/endpoints';
-import { objectToFormData } from '@/utils/form';
-import { UserRole } from '@/store/useAuthStore';
 
-interface LoginResponse {
-  user: {
-    id: string;
-    nombre: string;
-    apellido: string;
-    email: string;
-    cedula: string;
-    telefono: string;
-    role: UserRole;
-    emprendimiento?: {
-      id: string;
-      nombre: string;
-      descripcion: string;
-      nit: string;
-      direccion: string;
-    };
-  };
-  token: string;
-  refreshToken: string;
+export interface LoginResponse {
+  access_token: string;
+  token_type: string;
 }
 
-interface RegisterData {
-  nombre: string;
-  apellido: string;
+export interface UserResponse {
+  id: number;
+  name: string;
   email: string;
-  cedula: string;
-  telefono: string;
-  password: string;
-  tipoUsuario: 'cliente' | 'emprendedor';
-  emprendimiento?: {
-    nombre: string;
-    descripcion: string;
-    nit: string;
-    direccion: string;
+  phone_number: string;
+  document_id: string;
+  address: string;
+  enterprise_id?: number;
+  role_id?: number;
+  document_verified: boolean;
+  is_active: boolean;
+  role?: {
+    id: number;
+    name: string;
+    description: string;
   };
+  enterprise?: {
+    id: number;
+    name: string;
+    NIT: string;
+    email: string;
+    phone_number: string;
+    currency: string;
+    description: string;
+    address: string;
+  };
+}
+
+export interface RegisterData {
+  name: string;
+  email: string;
+  phone_number: string;
+  document_id: string;
+  address: string;
+  password: string;
+  enterprise?: {
+    name: string;
+    NIT: string;
+    email: string;
+    phone_number: string;
+    currency: string;
+    description: string;
+    address: string;
+  };
+}
+
+export interface UserUpdateRequest {
+  name?: string;
+  email?: string;
+  phone_number?: string;
+  address?: string;
+  password?: string;
+  role_id?: number;
+  document_verified?: boolean;
+  is_active?: boolean;
 }
 
 export const authService = {
   async login(email: string, password: string): Promise<LoginResponse> {
-    const formData = objectToFormData({ email, password });
-    const { data } = await api.post<LoginResponse>(AUTH_ENDPOINTS.LOGIN, formData, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+    const { data } = await api.post<LoginResponse>(AUTH_ENDPOINTS.LOGIN, {
+      email,
+      password,
     });
     return data;
   },
@@ -60,19 +81,59 @@ export const authService = {
     await api.post(AUTH_ENDPOINTS.REGISTER, userData);
   },
 
-  async verifyEmail(email: string, code: string): Promise<void> {
-    await api.post(AUTH_ENDPOINTS.VERIFY_EMAIL, { email, code });
+  async verifyEmail(token: string, email: string): Promise<void> {
+    await api.post(AUTH_ENDPOINTS.VERIFY_EMAIL, { token, email });
+  },
+
+  async verifyCode(email: string, code: string): Promise<void> {
+    await api.post(AUTH_ENDPOINTS.VERIFY_CODE, null, {
+      params: { email, code }
+    });
   },
 
   async resendVerificationCode(email: string): Promise<void> {
-    await api.post(AUTH_ENDPOINTS.RESEND_VERIFICATION, { email });
+    await api.post(AUTH_ENDPOINTS.RESEND_CODE, null, {
+      params: { email }
+    });
   },
 
-  async forgotPassword(email: string, cedula: string): Promise<void> {
-    await api.post(AUTH_ENDPOINTS.FORGOT_PASSWORD, { email, cedula });
+  async forgotPassword(email: string): Promise<void> {
+    await api.post(AUTH_ENDPOINTS.FORGOT_PASSWORD, { email });
   },
 
-  async resetPassword(token: string, password: string): Promise<void> {
-    await api.post(`${AUTH_ENDPOINTS.RESET_PASSWORD}/${token}`, { password });
+  async resetPassword(token: string, new_password: string): Promise<void> {
+    await api.post(AUTH_ENDPOINTS.RESET_PASSWORD, {
+      token,
+      new_password
+    });
   },
+
+  async getCurrentUser(): Promise<UserResponse> {
+    const { data } = await api.get<UserResponse>(AUTH_ENDPOINTS.CURRENT_USER);
+    return data;
+  },
+
+  async changePassword(old_password: string, new_password: string): Promise<void> {
+    await api.patch(AUTH_ENDPOINTS.CHANGE_PASSWORD, {
+      old_password,
+      new_password
+    });
+  },
+
+  async logout(): Promise<void> {
+    // Eliminar token del localStorage
+    localStorage.removeItem('token');
+    
+    // Opcional: notificar al backend (si hay un endpoint para cerrar sesión)
+    // try {
+    //   await api.post('/auth/logout');
+    // } catch (error) {
+    //   console.error('Error al cerrar sesión en el servidor:', error);
+    // }
+  },
+
+  async updateUser(documentId: string, userData: UserUpdateRequest): Promise<UserResponse> {
+    const { data } = await api.put<UserResponse>(`/auth/users/${documentId}`, userData);
+    return data;
+  }
 }; 

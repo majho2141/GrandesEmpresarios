@@ -1,11 +1,15 @@
 export const AUTH_ENDPOINTS = {
   LOGIN: '/auth/login',
   REGISTER: '/auth/register',
-  VERIFY_EMAIL: '/auth/verify',
-  FORGOT_PASSWORD: '/auth/forgot-password',
-  RESET_PASSWORD: '/auth/reset-password',
-  REFRESH_TOKEN: '/auth/refresh',
+  VERIFY_EMAIL: '/auth/verify-email',
+  VERIFY_CODE: '/auth/verify-code',
+  RESEND_CODE: '/auth/resend-code',
+  FORGOT_PASSWORD: '/auth/password-reset/request',
+  RESET_PASSWORD: '/auth/password-reset/confirm',
+  CURRENT_USER: '/auth/users/me',
+  CHANGE_PASSWORD: '/auth/change-password',
   GOOGLE_LOGIN: '/auth/google',
+  REFRESH_TOKEN: '/auth/refresh',
 } as const;
 
 export const USER_ENDPOINTS = {
