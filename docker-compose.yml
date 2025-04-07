@@ -20,37 +20,39 @@ services:
       - app-network
 
   backend:
+    container_name: backend
     build:
       context: backend
       dockerfile: Dockerfile.dev
-    ports:
-      - "${BACKEND_PORT}:${BACKEND_PORT}"
-      - "${DEBUG_PORT}:${DEBUG_PORT}"
-    depends_on:
-      - mysql
-    environment:
-      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
-      - SPRING_DEVTOOLS_REMOTE_SECRET=${SPRING_DEVTOOLS_REMOTE_SECRET}
-      - SPRING_DATASOURCE_URL=jdbc:mysql://${DB_HOST}:3306/${DB_NAME}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=${DB_USER}
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
     volumes:
-      - ./backend:/app:delegated
-      - backend_m2:/root/.m2
+      - ./backend:/app
+    ports:
+      - "${BACKEND_PORT}:8000"
+      - "${DEBUG_PORT}:5005"
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     networks:
       - app-network
 
-  mysql:
-    image: mysql:8.0
-    container_name: mysql
+  db:
+    image: postgres:15
     restart: always
-    ports:
-      - "${DB_PORT}:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
-      - mysql-data:/var/lib/mysql
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     networks:
       - app-network
 
@@ -59,6 +61,6 @@ networks:
     driver: bridge
 
 volumes:
-  mysql-data:
+  postgres-data:
   frontend_node_modules:
-  backend_m2:
+  backend_m2: 

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500">
+  <style>
+    .logo-text { fill: #FFFFFF; font-family: Arial, sans-serif; font-weight: bold; }
+    .logo-bg { fill: #000000; }
+  </style>
+  <rect class="logo-bg" width="100%" height="100%"/>
+  <text x="50" y="250" class="logo-text" font-size="200">EMPRE</text>
+  <text x="200" y="400" class="logo-text" font-size="300">T-CH</text>
+</svg> 
