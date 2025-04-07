@@ -196,18 +196,7 @@ export default function ProfilePage() {
   // Renderizamos el perfil solo si userData existe
   return (
     <div className="min-h-screen bg-[#F4F4F8]">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-[#2E4057] to-[#048BA8] text-white py-12">
-        <div className="container mx-auto px-4">
-          <h1 className="font-montserrat text-4xl md:text-5xl font-bold mb-4">
-            Mi Perfil
-          </h1>
-          <p className="font-opensans text-lg text-white/90 max-w-2xl">
-            Gestiona tu información personal y detalles de tu cuenta
-          </p>
-        </div>
-      </section>
-
+      
       {userData && (
         <div className="container mx-auto px-4 py-12">
           <div className="grid md:grid-cols-3 gap-8">
@@ -233,6 +222,14 @@ export default function ProfilePage() {
                   </svg>
                   <span>{userData.document_verified ? 'Verificado' : 'No verificado'}</span>
                 </div>
+                
+                {/* Insignia de tipo de usuario */}
+                <div className={`inline-flex mx-auto px-3 py-1 rounded-full text-xs font-medium mb-4 ${
+                  userData.enterprise ? 'bg-[#048BA8]/10 text-[#048BA8]' : 'bg-[#F18F01]/10 text-[#F18F01]'
+                }`}>
+                  {userData.enterprise ? 'Emprendedor' : 'Cliente'}
+                </div>
+                
                 <button
                   onClick={() => setIsEditing(!isEditing)}
                   className="w-full bg-[#048BA8] text-white font-semibold py-2 px-4 rounded-lg hover:bg-[#048BA8]/90 transition-colors"
@@ -384,6 +381,59 @@ export default function ProfilePage() {
                         Descripción
                       </label>
                       <p className="text-[#2E4057] font-medium">{userData.role.description}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Información del Emprendimiento (Solo para emprendedores) */}
+              {userData.enterprise && (
+                <div className="bg-white rounded-xl shadow-sm border border-[#E1E1E8] p-6">
+                  <h3 className="font-montserrat font-semibold text-xl text-[#048BA8] mb-6">
+                    Información del Emprendimiento
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block font-opensans text-sm font-medium text-[#2E4057]/60 mb-1">
+                        Nombre del Emprendimiento
+                      </label>
+                      <p className="text-[#2E4057] font-medium">{userData.enterprise.name}</p>
+                    </div>
+                    <div>
+                      <label className="block font-opensans text-sm font-medium text-[#2E4057]/60 mb-1">
+                        NIT
+                      </label>
+                      <p className="text-[#2E4057] font-medium">{userData.enterprise.NIT}</p>
+                    </div>
+                    <div>
+                      <label className="block font-opensans text-sm font-medium text-[#2E4057]/60 mb-1">
+                        Correo del Emprendimiento
+                      </label>
+                      <p className="text-[#2E4057] font-medium">{userData.enterprise.email}</p>
+                    </div>
+                    <div>
+                      <label className="block font-opensans text-sm font-medium text-[#2E4057]/60 mb-1">
+                        Teléfono del Emprendimiento
+                      </label>
+                      <p className="text-[#2E4057] font-medium">{userData.enterprise.phone_number}</p>
+                    </div>
+                    <div>
+                      <label className="block font-opensans text-sm font-medium text-[#2E4057]/60 mb-1">
+                        Moneda
+                      </label>
+                      <p className="text-[#2E4057] font-medium">{userData.enterprise.currency}</p>
+                    </div>
+                    <div>
+                      <label className="block font-opensans text-sm font-medium text-[#2E4057]/60 mb-1">
+                        Dirección
+                      </label>
+                      <p className="text-[#2E4057] font-medium">{userData.enterprise.address}</p>
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block font-opensans text-sm font-medium text-[#2E4057]/60 mb-1">
+                        Descripción
+                      </label>
+                      <p className="text-[#2E4057] font-medium">{userData.enterprise.description}</p>
                     </div>
                   </div>
                 </div>
