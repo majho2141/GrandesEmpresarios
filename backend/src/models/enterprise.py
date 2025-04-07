@@ -1,5 +1,5 @@
-from sqlmodel import SQLModel, Field
-from typing import Optional
+from sqlmodel import SQLModel, Field, Relationship
+from typing import Optional, List
 
 class EnterpriseBase(SQLModel):
     name: str = Field(max_length=45)
@@ -12,6 +12,7 @@ class EnterpriseBase(SQLModel):
 
 class Enterprise(EnterpriseBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
+    products: List["Product"] = Relationship(back_populates="enterprise")
 
 class EnterpriseCreate(EnterpriseBase):
     pass

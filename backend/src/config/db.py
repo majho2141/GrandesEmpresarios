@@ -16,6 +16,7 @@ def init_db():
     from src.models.role import Role
     from src.models.permission import Permission
     from src.models.permission_has_role import PermissionHasRole
+    from src.models.product import Product, Category
     from src.utils.init_roles import initialize_default_roles
     
     # Crear todas las tablas
