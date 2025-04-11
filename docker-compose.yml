@@ -3,7 +3,7 @@ services:
   frontend:
     build:
       context: frontend
-      dockerfile: ./frontend/Dockerfile.dev
+      dockerfile: /Dockerfile.dev
     ports:
       - "${FRONTEND_PORT}:${FRONTEND_PORT}"
     depends_on:
@@ -23,7 +23,7 @@ services:
     container_name: backend
     build:
       context: backend
-      dockerfile: ./backend/Dockerfile.dev
+      dockerfile: /Dockerfile.dev
     volumes:
       - ./backend:/app
     ports:

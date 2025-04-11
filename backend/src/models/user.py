@@ -1,12 +1,12 @@
 from typing import Optional
-from pydantic import EmailStr
+from pydantic import EmailStr, validator
 from sqlmodel import Field, SQLModel, Relationship
 from .role import Role, RoleRead
 from .enterprise import Enterprise, EnterpriseRead, EnterpriseCreate
 
 class UserBase(SQLModel):
     name: str = Field(max_length=45)
-    email: EmailStr = Field(unique=True, index=True)
+    email: str = Field(unique=True, index=True)
     phone_number: str = Field(max_length=20)
     document_id: str = Field(max_length=20)
     address: str = Field(max_length=255)
@@ -14,6 +14,16 @@ class UserBase(SQLModel):
     role_id: Optional[int] = Field(default=None, foreign_key="role.id", nullable=True)
     document_verified: bool = Field(default=False)
     is_active: bool = Field(default=False)
+
+    @validator('email')
+    def validate_email(cls, v):
+        if not v:
+            raise ValueError('Email cannot be empty')
+        try:
+            EmailStr.validate(v)
+        except ValueError:
+            raise ValueError('Invalid email format')
+        return v
 
 class UserCreate(UserBase):
     password: str
@@ -28,7 +38,7 @@ class UserReadWithDetails(UserRead):
 
 class UserUpdate(SQLModel):
     name: Optional[str] = None
-    email: Optional[EmailStr] = None
+    email: Optional[str] = None
     phone_number: Optional[str] = None
     address: Optional[str] = None
     password: Optional[str] = None
@@ -36,10 +46,29 @@ class UserUpdate(SQLModel):
     document_verified: Optional[bool] = None
     is_active: Optional[bool] = None
 
+    @validator('email')
+    def validate_email(cls, v):
+        if v is not None:
+            try:
+                EmailStr.validate(v)
+            except ValueError:
+                raise ValueError('Invalid email format')
+        return v
+
 # Modelo para autenticación
 class UserLogin(SQLModel):
-    email: EmailStr
+    email: str
     password: str
+
+    @validator('email')
+    def validate_email(cls, v):
+        if not v:
+            raise ValueError('Email cannot be empty')
+        try:
+            EmailStr.validate(v)
+        except ValueError:
+            raise ValueError('Invalid email format')
+        return v
 
 # Modelo para token
 class Token(SQLModel):
