@@ -39,6 +39,22 @@ const registerSchema = z.object({
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Las contraseñas no coinciden',
   path: ['confirmPassword'],
+}).refine((data) => {
+  // Si es emprendedor, verificar que los datos de empresa estén completos
+  if (data.userType === 'entrepreneur') {
+    return data.enterprise && 
+           data.enterprise.name && 
+           data.enterprise.NIT && 
+           data.enterprise.email && 
+           data.enterprise.phone_number && 
+           data.enterprise.currency && 
+           data.enterprise.description && 
+           data.enterprise.address;
+  }
+  return true;
+}, {
+  message: 'Todos los campos del emprendimiento son requeridos',
+  path: ['enterprise'],
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
@@ -107,6 +123,17 @@ export default function RegisterPage() {
   const handleUserTypeChange = (type: 'client' | 'entrepreneur') => {
     setUserType(type);
     setValue('userType', type);
+    
+    if (type === 'entrepreneur') {
+      // Inicializar campos de empresa con valores vacíos para evitar errores de validación
+      setValue('enterprise.name', '');
+      setValue('enterprise.NIT', '');
+      setValue('enterprise.email', '');
+      setValue('enterprise.phone_number', '');
+      setValue('enterprise.currency', 'COP'); // Valor por defecto para moneda
+      setValue('enterprise.description', '');
+      setValue('enterprise.address', '');
+    }
   };
 
   const handleGoogleRegister = async () => {
@@ -349,6 +376,48 @@ export default function RegisterPage() {
                     className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057]"
                   />
                 </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="enterprise.email" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
+                    Email del Emprendimiento
+                  </label>
+                  <Input
+                    id="enterprise.email"
+                    type="email"
+                    {...register('enterprise.email')}
+                    error={errors.enterprise?.email?.message}
+                    className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057]"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="enterprise.phone_number" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
+                    Teléfono del Emprendimiento
+                  </label>
+                  <Input
+                    id="enterprise.phone_number"
+                    type="tel"
+                    {...register('enterprise.phone_number')}
+                    error={errors.enterprise?.phone_number?.message}
+                    className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057]"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label htmlFor="enterprise.currency" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
+                  Moneda
+                </label>
+                <Input
+                  id="enterprise.currency"
+                  type="text"
+                  defaultValue="COP"
+                  {...register('enterprise.currency')}
+                  error={errors.enterprise?.currency?.message}
+                  className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057]"
+                />
               </div>
             </div>
           )}

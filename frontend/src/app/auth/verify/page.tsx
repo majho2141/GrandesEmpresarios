@@ -38,6 +38,7 @@ function VerifyForm() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<VerifyFormData>({
     resolver: zodResolver(verifySchema),
@@ -102,17 +103,21 @@ function VerifyForm() {
 
   // Efecto para verificar cuando se complete el código
   useEffect(() => {
+    const fullCode = verificationCode.join('');
+    // Actualizamos el valor del campo code en el formulario
+    setValue('code', fullCode);
+    
     if (verificationCode.every(digit => digit !== '')) {
       // TODO: Aquí puedes implementar la lógica de verificación
-      console.log('Código completo:', verificationCode.join(''));
+      console.log('Código completo:', fullCode);
     }
-  }, [verificationCode]);
+  }, [verificationCode, setValue]);
 
   const onSubmit = handleSubmit(async (data: VerifyFormData) => {
     if (!email) return;
     
     try {
-      await authService.verifyEmail(email, data.code);
+      await authService.verifyEmail(data.code, email);
       showAlert('success', '¡Correo verificado exitosamente!');
       router.push('/auth/login');
     } catch (error) {
@@ -160,6 +165,9 @@ function VerifyForm() {
         </div>
 
         <form onSubmit={onSubmit} className="mt-8 space-y-6">
+          {/* Input oculto para el código completo */}
+          <input type="hidden" {...register('code')} />
+          
           <div className="mt-8">
             <div className="flex justify-center gap-3">
               {verificationCode.map((digit, index) => (

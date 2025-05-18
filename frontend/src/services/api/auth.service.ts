@@ -82,8 +82,10 @@ export const authService = {
     await api.post(AUTH_ENDPOINTS.REGISTER, userData);
   },
 
-  async verifyEmail(token: string, email: string): Promise<void> {
-    await api.post(AUTH_ENDPOINTS.VERIFY_EMAIL, { token, email });
+  async verifyEmail(code: string, email: string): Promise<void> {
+    await api.post(AUTH_ENDPOINTS.VERIFY_CODE, null, {
+      params: { email, code }
+    });
   },
 
   async verifyCode(email: string, code: string): Promise<void> {

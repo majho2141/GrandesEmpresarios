@@ -2,30 +2,23 @@
 import { Select } from '@/components/ui/Select';
 import { Input } from '@/components/ui/Input';
 import { useState } from 'react';
+import { ProductCategory, ProductFiltersType } from '@/services/api/product.service';
 
 interface ProductFiltersProps {
-  onFilterChange: (filters: ProductFilters) => void;
-  categories: string[];
+  onFilterChange: (filters: ProductFiltersType) => void;
+  categories: ProductCategory[];
 }
 
-interface ProductFilters {
-  search: string;
-  category: string;
-  minPrice: number | null;
-  maxPrice: number | null;
-  sortBy: 'price_asc' | 'price_desc' | 'newest' | 'popular';
-}
-
-export const ProductFilters = ({ onFilterChange, categories }: ProductFiltersProps) => {
-  const [filters, setFilters] = useState<ProductFilters>({
+export const ProductFilters = ({ onFilterChange, categories = [] }: ProductFiltersProps) => {
+  const [filters, setFilters] = useState<ProductFiltersType>({
     search: '',
-    category: '',
-    minPrice: null,
-    maxPrice: null,
+    category_id: undefined,
+    minPrice: undefined,
+    maxPrice: undefined,
     sortBy: 'newest'
   });
 
-  const handleFilterChange = (partialFilter: Partial<ProductFilters>) => {
+  const handleFilterChange = (partialFilter: Partial<ProductFiltersType>) => {
     const newFilters = { ...filters, ...partialFilter };
     setFilters(newFilters);
     onFilterChange(newFilters);
@@ -51,7 +44,7 @@ export const ProductFilters = ({ onFilterChange, categories }: ProductFiltersPro
               id="search"
               type="text"
               placeholder="Buscar productos..."
-              value={filters.search}
+              value={filters.search || ''}
               onChange={(e) => handleFilterChange({ search: e.target.value })}
               className="pl-10 border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057] rounded-lg"
             />
@@ -61,25 +54,29 @@ export const ProductFilters = ({ onFilterChange, categories }: ProductFiltersPro
           </div>
         </div>
 
-        {/* Categoría */}
-        <div className="group">
-          <label htmlFor="category" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium group-hover:text-[#048BA8] transition-colors duration-300">
-            Categoría
-          </label>
-          <Select
-            id="category"
-            value={filters.category}
-            onChange={(e) => handleFilterChange({ category: e.target.value })}
-            options={[
-              { value: '', label: 'Todas las categorías' },
-              ...categories.map(category => ({
-                value: category,
-                label: category
-              }))
-            ]}
-            className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057] rounded-lg"
-          />
-        </div>
+        {/* Categoría - Solo mostrar si hay categorías disponibles */}
+        {categories.length > 0 && (
+          <div className="group">
+            <label htmlFor="category" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium group-hover:text-[#048BA8] transition-colors duration-300">
+              Categoría
+            </label>
+            <Select
+              id="category"
+              value={filters.category_id?.toString() || ''}
+              onChange={(e) => handleFilterChange({ 
+                category_id: e.target.value ? Number(e.target.value) : undefined 
+              })}
+              options={[
+                { value: '', label: 'Todas las categorías' },
+                ...categories.map(category => ({
+                  value: category.id.toString(),
+                  label: category.name
+                }))
+              ]}
+              className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057] rounded-lg"
+            />
+          </div>
+        )}
 
         {/* Rango de precios */}
         <div className="group">
@@ -93,7 +90,7 @@ export const ProductFilters = ({ onFilterChange, categories }: ProductFiltersPro
                 placeholder="Mínimo"
                 value={filters.minPrice || ''}
                 onChange={(e) => handleFilterChange({ 
-                  minPrice: e.target.value ? Number(e.target.value) : null 
+                  minPrice: e.target.value ? Number(e.target.value) : undefined 
                 })}
                 className="pl-8 border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057] rounded-lg"
               />
@@ -105,7 +102,7 @@ export const ProductFilters = ({ onFilterChange, categories }: ProductFiltersPro
                 placeholder="Máximo"
                 value={filters.maxPrice || ''}
                 onChange={(e) => handleFilterChange({ 
-                  maxPrice: e.target.value ? Number(e.target.value) : null 
+                  maxPrice: e.target.value ? Number(e.target.value) : undefined 
                 })}
                 className="pl-8 border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057] rounded-lg"
               />
@@ -121,7 +118,7 @@ export const ProductFilters = ({ onFilterChange, categories }: ProductFiltersPro
           </label>
           <Select
             id="sortBy"
-            value={filters.sortBy}
+            value={filters.sortBy || 'newest'}
             onChange={(e) => handleFilterChange({ sortBy: e.target.value as typeof filters.sortBy })}
             options={[
               { value: 'newest', label: 'Más recientes' },
