@@ -1,35 +1,33 @@
 import api from './axios';
 import { USER_ENDPOINTS } from '@/constants/endpoints';
-import { UserRole } from '@/store/useAuthStore';
+import { UserRole } from '@/types/user';
 
 interface UserProfile {
   id: string;
-  nombre: string;
-  apellido: string;
+  name: string;
   email: string;
-  cedula: string;
-  telefono: string;
+  document_id: string;
+  phone_number: string;
   role: UserRole;
-  emprendimiento?: {
+  enterprise?: {
     id: string;
-    nombre: string;
-    descripcion: string;
-    nit: string;
-    direccion: string;
+    name: string;
+    description: string;
+    NIT: string;
+    address: string;
   };
 }
 
 interface UpdateProfileData {
-  nombre?: string;
-  apellido?: string;
+  name?: string;
   email?: string;
-  cedula?: string;
-  telefono?: string;
-  emprendimiento?: {
-    nombre?: string;
-    descripcion?: string;
-    nit?: string;
-    direccion?: string;
+  document_id?: string;
+  phone_number?: string;
+  enterprise?: {
+    name?: string;
+    description?: string;
+    NIT?: string;
+    address?: string;
   };
 }
 

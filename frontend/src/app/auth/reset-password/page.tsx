@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { useAlert } from '@/context/AlertContext';
 import { authService } from '@/services/api/auth.service';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 
 const resetPasswordSchema = z.object({
   password: z.string()
@@ -32,7 +32,7 @@ interface PasswordRequirement {
   met: boolean;
 }
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { showAlert } = useAlert();
@@ -102,121 +102,98 @@ export default function ResetPasswordPage() {
             />
           </Link>
           <h2 className="text-center text-3xl font-montserrat font-bold text-[#048BA8] mb-3">
-            Nueva Contraseña
+            Restablecer Contraseña
           </h2>
           <p className="text-center text-base font-opensans text-[#2E4057]/80 max-w-sm">
-            Ingresa y confirma tu nueva contraseña para restablecer el acceso a tu cuenta
+            Ingresa tu nueva contraseña
           </p>
         </div>
 
         <form onSubmit={onSubmit} className="mt-8 space-y-6">
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div>
-              <label htmlFor="password" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
-                Nueva contraseña
-              </label>
               <Input
-                id="password"
                 type="password"
-                placeholder="••••••••"
+                label="Nueva contraseña"
                 {...register('password')}
-                error={errors.password?.message}
-                className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057]"
                 onChange={(e) => setPassword(e.target.value)}
+                error={errors.password?.message}
               />
-              <ul className="mt-2 space-y-1 text-sm font-opensans">
-                {requirements.map((req, index) => (
-                  <li 
-                    key={index} 
-                    className={`flex items-center transition-colors duration-300 ${
-                      req.met ? 'text-[#99C24D]' : 'text-[#2E4057]/60'
-                    }`}
-                  >
-                    <svg 
-                      className={`w-4 h-4 mr-2 transition-colors duration-300 ${
-                        req.met ? 'text-[#99C24D]' : 'text-[#2E4057]/60'
-                      }`} 
-                      fill={req.met ? 'currentColor' : 'none'} 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
-                    >
-                      <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth="2" 
-                        d={req.met 
-                          ? "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" 
-                          : "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        } 
-                      />
-                    </svg>
-                    {req.text}
-                  </li>
-                ))}
-              </ul>
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
-                Confirmar contraseña
-              </label>
               <Input
-                id="confirmPassword"
                 type="password"
-                placeholder="••••••••"
+                label="Confirmar contraseña"
                 {...register('confirmPassword')}
                 error={errors.confirmPassword?.message}
-                className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057]"
               />
+            </div>
+
+            <div className="space-y-2">
+              {requirements.map((req, index) => (
+                <div key={index} className="flex items-center">
+                  <div className={`w-4 h-4 rounded-full mr-2 ${req.met ? 'bg-green-500' : 'bg-gray-300'}`} />
+                  <span className={`text-sm ${req.met ? 'text-green-600' : 'text-gray-500'}`}>
+                    {req.text}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
-          <Button 
-            type="submit" 
-            fullWidth 
-            disabled={isSubmitting || !requirements.every(req => req.met)}
-            className={`text-white font-semibold py-3 transition-all duration-300 hover:shadow-lg ${
-              requirements.every(req => req.met)
-                ? 'bg-[#F18F01] hover:bg-[#F18F01]/90'
-                : 'bg-[#F18F01]/50 cursor-not-allowed'
-            }`}
-          >
-            {isSubmitting ? (
-              <div className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Actualizando...
-              </div>
-            ) : (
-              'Actualizar contraseña'
-            )}
-          </Button>
-
-          <div className="text-center">
-            <Link
-              href="/auth/login"
-              className="inline-flex items-center text-[#048BA8] hover:text-[#048BA8]/80 font-semibold transition-colors duration-300"
+          <div className="space-y-4">
+            <Button
+              type="submit"
+              fullWidth
+              disabled={isSubmitting}
+              className="bg-[#F18F01] hover:bg-[#F18F01]/90 text-white font-semibold py-3 transition-all duration-300 hover:shadow-lg"
             >
-              <svg 
-                className="w-4 h-4 mr-2" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
+              {isSubmitting ? (
+                <div className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Actualizando...
+                </div>
+              ) : (
+                'Actualizar contraseña'
+              )}
+            </Button>
+
+            <div className="text-center">
+              <Link
+                href="/auth/login"
+                className="inline-flex items-center text-[#048BA8] hover:text-[#048BA8]/80 font-semibold transition-colors duration-300"
               >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-              Volver al inicio de sesión
-            </Link>
+                <svg 
+                  className="w-4 h-4 mr-2" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+                Volver al inicio de sesión
+              </Link>
+            </div>
           </div>
         </form>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 } 

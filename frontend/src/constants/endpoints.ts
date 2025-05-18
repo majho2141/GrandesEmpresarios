@@ -13,10 +13,10 @@ export const AUTH_ENDPOINTS = {
 } as const;
 
 export const USER_ENDPOINTS = {
-  PROFILE: '/users/profile',
-  UPDATE_PROFILE: '/users/profile',
-  CHANGE_PASSWORD: '/users/change-password',
-  DEACTIVATE_ACCOUNT: '/users/deactivate',
+  PROFILE: '/auth/users/me',
+  UPDATE_PROFILE: '/auth/users/me',
+  CHANGE_PASSWORD: '/auth/change-password',
+  DEACTIVATE_ACCOUNT: '/auth/users/deactivate',
 } as const;
 
 export const PRODUCT_ENDPOINTS = {

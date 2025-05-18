@@ -56,6 +56,28 @@ services:
     networks:
       - app-network
 
+  backend-tests:
+    build:
+      context: backend
+      dockerfile: /Dockerfile.dev
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - ENVIRONMENT=test
+      - PYTHONPATH=/app
+    command: pytest tests/ -v
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge

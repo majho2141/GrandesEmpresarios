@@ -9,6 +9,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { authService } from '@/services/api/auth.service';
 import { AuthState, LoginCredentials, RegisterCredentials, User } from '@/types/auth';
+import { useAuthStore } from '@/store/useAuthStore';
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
@@ -41,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const { user } = await authService.getCurrentUser();
+      const user = await authService.getCurrentUser();
       setState({
         user,
         isLoading: false,
@@ -62,8 +63,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (credentials: LoginCredentials) => {
     try {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
-      const { user, token } = await authService.login(credentials);
-      localStorage.setItem('token', token);
+      const response = await authService.login(credentials.email, credentials.password);
+      localStorage.setItem('token', response.access_token);
+      localStorage.setItem('refreshToken', response.refresh_token);
+      useAuthStore.getState().setTokens(response.access_token, response.refresh_token);
+      const user = await authService.getCurrentUser();
       setState({
         user,
         isLoading: false,
@@ -100,6 +104,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setState((prev) => ({ ...prev, isLoading: true }));
       await authService.logout();
       localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      useAuthStore.getState().clearAuth();
       setState({
         user: null,
         isLoading: false,
@@ -119,8 +125,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginWithGoogle = async (token: string) => {
     try {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
-      const { user, token: authToken } = await authService.loginWithGoogle(token);
-      localStorage.setItem('token', authToken);
+      const response = await authService.loginWithGoogle(token);
+      localStorage.setItem('token', response.access_token);
+      localStorage.setItem('refreshToken', response.refresh_token);
+      useAuthStore.getState().setTokens(response.access_token, response.refresh_token);
+      const user = await authService.getCurrentUser();
       setState({
         user,
         isLoading: false,
