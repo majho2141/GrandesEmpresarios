@@ -1,12 +1,16 @@
 from sqlmodel import SQLModel, Session, create_engine
 from sqlalchemy import text
+import os
 from src.config.settings import settings
 
+# Determinar la URL de la base de datos basada en el entorno
+if os.getenv("ENVIRONMENT") == "test":
+    DATABASE_URL = "sqlite:///./test.db"
+else:
+    DATABASE_URL = settings.POSTGRES_URI
+
 # Usar PostgreSQL con la URI de la configuración
-engine = create_engine(
-    settings.POSTGRES_URI,
-    echo=True  # Para ver las consultas SQL en los logs
-)
+engine = create_engine(DATABASE_URL)
 
 def init_db():
     """
@@ -27,7 +31,7 @@ def init_db():
         initialize_default_roles(session)
         add_address_column(session)
 
-def get_session():
+def get_session() -> Session:
     with Session(engine) as session:
         yield session
 

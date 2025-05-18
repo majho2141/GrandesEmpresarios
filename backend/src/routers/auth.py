@@ -5,7 +5,7 @@ from src.deps import SessionDep, get_current_user
 from src.models.user import User
 from src.models.auth import Token, VerifyCodeRequest, TokenVerificationResponse
 from src.crud import user as crud
-from src.core.security import create_access_token, verify_token
+from src.config.security import create_access_token, verify_token
 from src.core.config import settings
 from src.utils.email import send_email
 import random
@@ -78,6 +78,4 @@ async def verify_token_endpoint(
         return TokenVerificationResponse(
             is_valid=False,
             message=str(e)
-        )
-
-// ... existing code ... 
+        ) 

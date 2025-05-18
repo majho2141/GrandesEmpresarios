@@ -2,12 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Annotated
 from sqlmodel import Session
 from src.crud import product as crud
-from src.models.product import Product, ProductCreate, ProductRead, ProductUpdate, Category, CategoryCreate, CategoryRead, CategoryUpdate
+from src.models.product import Product, ProductCreate, ProductRead, ProductUpdate, Category, CategoryCreate, CategoryRead, CategoryUpdate, ProductStatus
 from src.deps import SessionDep, get_current_user, get_current_superuser
 from src.models.user import User
 from src.database import get_session
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/products",
+    tags=["products"]
+)
 
 def check_product_access(current_user: User, enterprise_id: int):
     """
@@ -19,114 +22,125 @@ def check_product_access(current_user: User, enterprise_id: int):
         return True
     return False
 
-@router.post("/products", response_model=ProductRead)
-async def create_product(
+@router.post("/", response_model=ProductRead)
+def create_product(
     product: ProductCreate,
-    current_user: Annotated[User, Depends(get_current_user)],
-    session: SessionDep
+    db: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
 ):
-    """
-    Crear un nuevo producto.
-    Solo administradores o usuarios de la misma empresa pueden crear productos.
-    """
-    # Verificar que el usuario tenga una empresa asociada
-    if not current_user.enterprise_id:
-        raise HTTPException(
-            status_code=403,
-            detail="No tienes una empresa asociada para crear productos"
-        )
+    # Verificar que el usuario pertenece a la empresa
+    if product.enterprise_id != current_user.enterprise_id:
+        raise HTTPException(status_code=403, detail="Not authorized to create products for this enterprise")
     
-    # Crear el producto con el enterprise_id del usuario
-    return crud.create_product(session=session, product=product, enterprise_id=current_user.enterprise_id)
+    # Verificar que todas las categorías existen
+    for category_id in product.category_ids:
+        category = crud.get_category(db, category_id)
+        if not category:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Category with id {category_id} not found"
+            )
+    
+    return crud.create_product(db, product)
 
-@router.get("/products/{product_id}", response_model=ProductRead)
-async def get_product(
-    product_id: int,
-    current_user: Annotated[User, Depends(get_current_user)],
-    session: SessionDep
+@router.get("/", response_model=List[ProductRead])
+def read_products(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_session)
 ):
-    """
-    Obtener un producto por ID.
-    Solo administradores o usuarios de la misma empresa pueden ver el producto.
-    """
-    product = crud.get_product(session=session, product_id=product_id)
+    products = crud.get_products(db, skip=skip, limit=limit)
+    return products
+
+@router.get("/enterprise/{enterprise_id}", response_model=List[ProductRead])
+def read_enterprise_products(
+    enterprise_id: int,
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    # Verificar que el usuario pertenece a la empresa
+    if enterprise_id != current_user.enterprise_id:
+        raise HTTPException(status_code=403, detail="Not authorized to view this enterprise's products")
+    
+    products = crud.get_enterprise_products(db, enterprise_id, skip=skip, limit=limit)
+    return products
+
+@router.get("/{product_id}", response_model=ProductRead)
+def read_product(
+    product_id: int,
+    db: Session = Depends(get_session)
+):
+    product = crud.get_product(db, product_id)
     if not product:
-        raise HTTPException(status_code=404, detail="Producto no encontrado")
-    
-    if not check_product_access(current_user, product.enterprise_id):
-        raise HTTPException(
-            status_code=403,
-            detail="No tienes permiso para ver este producto"
-        )
-    
+        raise HTTPException(status_code=404, detail="Product not found")
     return product
 
-@router.get("/products/enterprise/{enterprise_id}", response_model=List[ProductRead])
-async def get_products_by_enterprise(
-    enterprise_id: int,
-    current_user: Annotated[User, Depends(get_current_user)],
-    session: SessionDep
-):
-    """
-    Obtener todos los productos de una empresa.
-    Solo administradores o usuarios de la misma empresa pueden ver los productos.
-    """
-    if not check_product_access(current_user, enterprise_id):
-        raise HTTPException(
-            status_code=403,
-            detail="No tienes permiso para ver los productos de esta empresa"
-        )
-    
-    return crud.get_products_by_enterprise(session=session, enterprise_id=enterprise_id)
-
-@router.patch("/products/{product_id}", response_model=ProductRead)
-async def update_product(
+@router.patch("/{product_id}", response_model=ProductRead)
+def update_product(
     product_id: int,
-    product: ProductUpdate,
-    current_user: Annotated[User, Depends(get_current_user)],
-    session: SessionDep
+    product_update: ProductUpdate,
+    db: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
 ):
-    """
-    Actualizar un producto.
-    Solo administradores o usuarios de la misma empresa pueden actualizar el producto.
-    """
-    db_product = crud.get_product(session=session, product_id=product_id)
-    if not db_product:
-        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    product = crud.get_product(db, product_id)
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
     
-    if not check_product_access(current_user, db_product.enterprise_id):
-        raise HTTPException(
-            status_code=403,
-            detail="No tienes permiso para actualizar este producto"
-        )
+    # Verificar que el usuario pertenece a la empresa
+    if product.enterprise_id != current_user.enterprise_id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this product")
     
-    return crud.update_product(session=session, product_id=product_id, product=product)
+    # Verificar que todas las categorías existen si se proporcionan
+    if product_update.category_ids is not None:
+        for category_id in product_update.category_ids:
+            category = crud.get_category(db, category_id)
+            if not category:
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Category with id {category_id} not found"
+                )
+    
+    updated_product = crud.update_product(db, product_id, product_update)
+    return updated_product
 
-@router.delete("/products/{product_id}")
-async def delete_product(
+@router.delete("/{product_id}")
+def delete_product(
     product_id: int,
-    current_user: Annotated[User, Depends(get_current_user)],
-    session: SessionDep
+    db: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
 ):
-    """
-    Eliminar un producto.
-    Solo administradores o usuarios de la misma empresa pueden eliminar el producto.
-    """
-    db_product = crud.get_product(session=session, product_id=product_id)
-    if not db_product:
-        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    product = crud.get_product(db, product_id)
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
     
-    if not check_product_access(current_user, db_product.enterprise_id):
-        raise HTTPException(
-            status_code=403,
-            detail="No tienes permiso para eliminar este producto"
-        )
+    # Verificar que el usuario pertenece a la empresa
+    if product.enterprise_id != current_user.enterprise_id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this product")
     
-    success = crud.delete_product(session=session, product_id=product_id)
+    success = crud.delete_product(db, product_id)
     if not success:
-        raise HTTPException(status_code=500, detail="Error al eliminar el producto")
+        raise HTTPException(status_code=400, detail="Could not delete product")
+    return {"message": "Product deleted successfully"}
+
+@router.patch("/{product_id}/status")
+def update_product_status(
+    product_id: int,
+    status: ProductStatus,
+    db: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    product = crud.get_product(db, product_id)
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
     
-    return {"message": "Producto eliminado correctamente"}
+    # Verificar que el usuario pertenece a la empresa
+    if product.enterprise_id != current_user.enterprise_id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this product's status")
+    
+    updated_product = crud.update_product_status(db, product_id, status)
+    return {"message": "Product status updated successfully"}
 
 # Endpoints para categorías (solo administradores)
 @router.post("/categories", response_model=CategoryRead)

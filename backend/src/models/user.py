@@ -1,8 +1,10 @@
-from typing import Optional
-from pydantic import EmailStr, validator
+from typing import Optional, List
+from pydantic import EmailStr, field_validator
 from sqlmodel import Field, SQLModel, Relationship
 from .role import Role, RoleRead
 from .enterprise import Enterprise, EnterpriseRead, EnterpriseCreate
+from .notification import Notification
+from .address import Address
 
 class UserBase(SQLModel):
     name: str = Field(max_length=45)
@@ -15,12 +17,15 @@ class UserBase(SQLModel):
     document_verified: bool = Field(default=False)
     is_active: bool = Field(default=False)
 
-    @validator('email')
-    def validate_email(cls, v):
+    @field_validator('email')
+    @classmethod
+    def validate_email(cls, v: str) -> str:
         if not v:
             raise ValueError('Email cannot be empty')
         try:
-            EmailStr.validate(v)
+            # Validar el formato del email usando una expresión regular simple
+            if '@' not in v or '.' not in v:
+                raise ValueError('Invalid email format')
         except ValueError:
             raise ValueError('Invalid email format')
         return v
@@ -46,11 +51,14 @@ class UserUpdate(SQLModel):
     document_verified: Optional[bool] = None
     is_active: Optional[bool] = None
 
-    @validator('email')
-    def validate_email(cls, v):
+    @field_validator('email')
+    @classmethod
+    def validate_email(cls, v: Optional[str]) -> Optional[str]:
         if v is not None:
             try:
-                EmailStr.validate(v)
+                # Validar el formato del email usando una expresión regular simple
+                if '@' not in v or '.' not in v:
+                    raise ValueError('Invalid email format')
             except ValueError:
                 raise ValueError('Invalid email format')
         return v
@@ -60,12 +68,15 @@ class UserLogin(SQLModel):
     email: str
     password: str
 
-    @validator('email')
-    def validate_email(cls, v):
+    @field_validator('email')
+    @classmethod
+    def validate_email(cls, v: str) -> str:
         if not v:
             raise ValueError('Email cannot be empty')
         try:
-            EmailStr.validate(v)
+            # Validar el formato del email usando una expresión regular simple
+            if '@' not in v or '.' not in v:
+                raise ValueError('Invalid email format')
         except ValueError:
             raise ValueError('Invalid email format')
         return v
@@ -80,4 +91,7 @@ class User(UserBase, table=True):
     password: str
     role: Optional[Role] = Relationship(back_populates="users")
     enterprise: Optional[Enterprise] = Relationship()
+    notifications: List[Notification] = Relationship(back_populates="user")
+    addresses: List["Address"] = Relationship(back_populates="user")
+    orders: List["Order"] = Relationship(back_populates="user")
 
