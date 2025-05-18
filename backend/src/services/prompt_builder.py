@@ -18,7 +18,7 @@ def build_ad_prompt(
 
     product_lines = []
     for p in products:
-        line = f"- {p.name} ({p.category.name}): {p.description or 'No description'} | Price: ${p.public_price:.2f}"
+        line = f"- {p.name}: {p.description or 'No description'} | Price: ${p.public_price:.2f}"
         product_lines.append(line)
 
     prompt = header + "\n".join(product_lines)

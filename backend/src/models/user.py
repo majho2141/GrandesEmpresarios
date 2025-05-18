@@ -4,6 +4,8 @@ from sqlmodel import Field, SQLModel, Relationship
 from email_validator import validate_email, EmailNotValidError
 from .role import Role, RoleRead
 from .enterprise import Enterprise, EnterpriseRead, EnterpriseCreate
+from .notification import Notification
+from .address import Address
 
 class UserBase(SQLModel):
     name: str = Field(max_length=45)
@@ -55,7 +57,9 @@ class User(UserBase, table=True):
     enterprise: Optional[Enterprise] = Relationship()
     ads: List["AdGenerated"] = Relationship(back_populates="user")
 
+    notifications: List[Notification] = Relationship(back_populates="user")
+    addresses: List["Address"] = Relationship(back_populates="user")
+    orders: List["Order"] = Relationship(back_populates="user")
+
 
 from src.models.ad import AdGenerated  # solo al final
-
-

@@ -9,6 +9,12 @@ from src.routers.permission import router as permission_router
 from src.routers.product import router as product_router
 from src.routers.category import router as category_router
 from src.routers.openai import router as openai_router
+from src.routers.auth import router as auth_router
+from src.routers.notification import router as notification_router
+from src.routers.address import router as address_router
+from src.routers.order import router as order_router
+from src.routers.order_detail import router as order_detail_router
+from src.routers.advertisement import router as advertisement_router
 from src.config.settings import settings
 from src.config.db import init_db
 from sqlmodel import SQLModel
@@ -34,12 +40,18 @@ os.makedirs("static/images/products", exist_ok=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Include routers
-app.include_router(user_router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
+app.include_router(auth_router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
+app.include_router(user_router, prefix=f"{settings.API_V1_STR}", tags=["users"])
 app.include_router(role_router, prefix=f"{settings.API_V1_STR}/roles", tags=["roles"])
 app.include_router(permission_router, prefix=f"{settings.API_V1_STR}/permissions", tags=["permissions"])
+app.include_router(openai_router, prefix=f"{settings.API_V1_STR}", tags=["openai"])
 app.include_router(product_router, prefix=f"{settings.API_V1_STR}", tags=["products"])
 app.include_router(category_router, prefix=f"{settings.API_V1_STR}", tags=["categories"])
-app.include_router(openai_router, prefix=f"{settings.API_V1_STR}", tags=["openai"])
+app.include_router(notification_router, prefix=f"{settings.API_V1_STR}", tags=["notifications"])
+app.include_router(address_router, prefix=f"{settings.API_V1_STR}", tags=["addresses"])
+app.include_router(order_router, prefix=f"{settings.API_V1_STR}", tags=["orders"])
+app.include_router(order_detail_router, prefix=f"{settings.API_V1_STR}", tags=["order-details"])
+app.include_router(advertisement_router, prefix=f"{settings.API_V1_STR}", tags=["advertisements"])
 
 @app.on_event("startup")
 def on_startup():

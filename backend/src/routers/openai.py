@@ -32,7 +32,7 @@ async def generate_ad_copy(
             Product.id.in_(request.product_ids),
             Product.enterprise_id == current_user.enterprise_id
         ).options(
-            selectinload(Product.category),
+            selectinload(Product.categories),
             selectinload(Product.enterprise)
         )
     ).all()

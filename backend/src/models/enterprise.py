@@ -15,6 +15,7 @@ class Enterprise(EnterpriseBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     products: List["Product"] = Relationship(back_populates="enterprise")
     ads: List["AdGenerated"] = Relationship(back_populates="enterprise")
+    advertisements: List["Advertisement"] = Relationship(back_populates="enterprise")
 
 class EnterpriseCreate(EnterpriseBase):
     pass
