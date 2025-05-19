@@ -16,6 +16,9 @@ class Enterprise(EnterpriseBase, table=True):
     products: List["Product"] = Relationship(back_populates="enterprise")
     ads: List["AdGenerated"] = Relationship(back_populates="enterprise")
     advertisements: List["Advertisement"] = Relationship(back_populates="enterprise")
+    users: List["User"] = Relationship(back_populates="enterprise")
+    payments: List["Payment"] = Relationship(back_populates="enterprise")
+    social_media_accounts: List["SocialMediaAccount"] = Relationship(back_populates="enterprise") 
 
 class EnterpriseCreate(EnterpriseBase):
     pass

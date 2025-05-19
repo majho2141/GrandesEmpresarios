@@ -1,6 +1,6 @@
 from datetime import date
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 from sqlmodel import Field, SQLModel, Relationship
 
 class AdvertisementStatus(str, Enum):
@@ -11,7 +11,8 @@ class AdvertisementStatus(str, Enum):
 
 class AdvertisementBase(SQLModel):
     title: str = Field(max_length=100)
-    description: str = Field(max_length=255)
+    description: str = Field(max_length=500)
+    image_url: Optional[str] = None
     start_date: date
     end_date: date
     cost: float
@@ -29,6 +30,7 @@ class AdvertisementRead(AdvertisementBase):
 class AdvertisementUpdate(SQLModel):
     title: Optional[str] = None
     description: Optional[str] = None
+    image_url: Optional[str] = None
     start_date: Optional[date] = None
     end_date: Optional[date] = None
     cost: Optional[float] = None
@@ -38,4 +40,6 @@ class AdvertisementUpdate(SQLModel):
 
 class Advertisement(AdvertisementBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    enterprise: "Enterprise" = Relationship(back_populates="advertisements") 
+    enterprise: "Enterprise" = Relationship(back_populates="advertisements")
+    payments: List["Payment"] = Relationship(back_populates="advertisement")
+    social_media_posts: List["SocialMediaPost"] = Relationship(back_populates="advertisement") 
