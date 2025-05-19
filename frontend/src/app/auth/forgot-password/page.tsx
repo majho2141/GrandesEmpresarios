@@ -32,7 +32,7 @@ export default function ForgotPasswordPage() {
 
   const onSubmit = handleSubmit(async (data: ForgotPasswordFormData) => {
     try {
-      await authService.forgotPassword(data.email, data.cedula);
+      await authService.forgotPassword(data.email);
       showAlert('success', 'Se ha enviado un correo con las instrucciones para restablecer tu contraseña.');
       router.push('/auth/login');
     } catch (error) {

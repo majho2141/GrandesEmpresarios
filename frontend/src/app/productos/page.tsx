@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { ProductCard } from '@/components/products/ProductCard';
 import { ProductFilters } from '@/components/products/ProductFilters';
 import { productService, Product, ProductCategory, ProductFiltersType } from '@/services/api/product.service';
+import { PageHeader } from '@/components/layout/PageHeader';
+import { Button } from '@/components/ui/Button';
+import Link from 'next/link';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -109,24 +112,30 @@ export default function ProductsPage() {
 
   return (
     <div className="min-h-screen bg-[#F4F4F8]">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-[#2E4057] to-[#048BA8] text-white py-12">
-        <div className="container mx-auto px-4">
-          <h1 className="font-montserrat text-4xl md:text-5xl font-bold mb-4">
-            Productos y Servicios
-          </h1>
-          <p className="font-opensans text-lg text-white/90 max-w-2xl">
-            Descubre soluciones tecnológicas innovadoras creadas por emprendedores colombianos.
-          </p>
-        </div>
-      </section>
+      {/* Header mejorado */}
+      <PageHeader 
+        title="Productos y Servicios"
+        description="Descubre soluciones tecnológicas innovadoras creadas por emprendedores colombianos."
+        backgroundImage="https://images.unsplash.com/photo-1531297484001-80022131f5a1?q=80&w=2020&auto=format&fit=crop"
+        breadcrumbs={[
+          { label: 'Inicio', link: '/' },
+          { label: 'Productos y Servicios' }
+        ]}
+        actions={
+          <Link href="/auth/register">
+            <Button className="bg-white text-[#048BA8] hover:bg-white/90 px-6 py-2.5">
+              Únete como emprendedor
+            </Button>
+          </Link>
+        }
+      />
 
       {/* Content Section */}
       <div className="container mx-auto px-4 py-12">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar con filtros */}
           <aside className="w-full md:w-80 flex-shrink-0">
-            <div className="sticky top-4">
+            <div className="sticky pt-16 top-0">
               <ProductFilters
                 categories={categories}
                 onFilterChange={handleFilterChange}

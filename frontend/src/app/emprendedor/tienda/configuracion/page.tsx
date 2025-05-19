@@ -52,7 +52,7 @@ export default function ConfiguracionTienda() {
                   <input
                     type="text"
                     id="nombreTienda"
-                    className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
+                    className="border border-gray-300 rounded-md p-2 w-full text-[#2E4057] focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
                     defaultValue="Eco Soluciones"
                   />
                 </div>
@@ -65,7 +65,7 @@ export default function ConfiguracionTienda() {
                     <input
                       type="text"
                       id="urlTienda"
-                      className="border border-gray-300 rounded-r-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
+                      className="border border-gray-300 rounded-r-md p-2 w-full text-[#2E4057] focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
                       defaultValue="ecosoluciones"
                     />
                   </div>
@@ -77,7 +77,7 @@ export default function ConfiguracionTienda() {
                 <textarea
                   id="descripcionTienda"
                   rows={4}
-                  className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
+                  className="border border-gray-300 rounded-md p-2 w-full text-[#2E4057] focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
                   defaultValue="Ofrecemos soluciones ecológicas para el hogar y la oficina, enfocándonos en productos sostenibles y de alta calidad."
                 ></textarea>
               </div>
@@ -226,7 +226,7 @@ export default function ConfiguracionTienda() {
                       <input
                         type="text"
                         defaultValue="#048BA8"
-                        className="border border-gray-300 rounded-md p-2 ml-2 w-full focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
+                        className="border border-gray-300 rounded-md p-2 ml-2 w-full text-[#2E4057] focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
                       />
                     </div>
                   </div>
@@ -243,7 +243,7 @@ export default function ConfiguracionTienda() {
                       <input
                         type="text"
                         defaultValue="#F18F01"
-                        className="border border-gray-300 rounded-md p-2 ml-2 w-full focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
+                        className="border border-gray-300 rounded-md p-2 ml-2 w-full text-[#2E4057] focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
                       />
                     </div>
                   </div>

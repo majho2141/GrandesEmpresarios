@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const { user } = await authService.getCurrentUser();
+      const user = await authService.getCurrentUser();
       setState({
         user,
         isLoading: false,
@@ -62,8 +62,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (credentials: LoginCredentials) => {
     try {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
-      const { user, token } = await authService.login(credentials);
-      localStorage.setItem('token', token);
+      const { access_token } = await authService.login(credentials.email, credentials.password);
+      const user = await authService.getCurrentUser();
+      localStorage.setItem('token', access_token);
       setState({
         user,
         isLoading: false,
@@ -119,8 +120,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginWithGoogle = async (token: string) => {
     try {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
-      const { user, token: authToken } = await authService.loginWithGoogle(token);
-      localStorage.setItem('token', authToken);
+      const { access_token } = await authService.loginWithGoogle(token);
+      const user = await authService.getCurrentUser();
+      localStorage.setItem('token', access_token);
       setState({
         user,
         isLoading: false,

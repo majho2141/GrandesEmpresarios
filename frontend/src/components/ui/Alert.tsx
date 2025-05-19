@@ -10,10 +10,10 @@ interface AlertProps {
 }
 
 const alertStyles = {
-  success: 'bg-success text-white',
+  success: 'bg-green-500 text-white',
   error: 'bg-red-500 text-white',
-  warning: 'bg-accent text-white',
-  info: 'bg-secondary text-white',
+  warning: 'bg-amber-500 text-white',
+  info: 'bg-blue-500 text-white',
 };
 
 export const Alert = ({
@@ -39,7 +39,7 @@ export const Alert = ({
 
   return (
     <div
-      className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-md transition-all duration-300 ${alertStyles[type]}`}
+      className={`fixed top-20 right-4 z-[1000] p-4 rounded-lg shadow-lg max-w-md transition-all duration-300 ${alertStyles[type]}`}
       role="alert"
     >
       <div className="flex items-center justify-between">

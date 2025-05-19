@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useRef, useEffect, KeyboardEvent, ClipboardEvent } from 'react';
+import { useState, useRef, useEffect, KeyboardEvent, ClipboardEvent, Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { useAlert } from '@/context/AlertContext';
@@ -18,14 +18,18 @@ const verifySchema = z.object({
 
 type VerifyFormData = z.infer<typeof verifySchema>;
 
-export default function VerifyPage() {
+function VerifyForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { showAlert } = useAlert();
   const [countdown, setCountdown] = useState(30);
   const [canResend, setCanResend] = useState(false);
-  const email = searchParams.get('email');
   const [verificationCode, setVerificationCode] = useState(['', '', '', '', '', '']);
+  
+  // Importamos useSearchParams dentro del componente cliente que está dentro de Suspense
+  const { useSearchParams } = require('next/navigation');
+  const searchParams = useSearchParams();
+  const email = searchParams.get('email');
+  
   const inputRefs = [
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
@@ -248,5 +252,20 @@ export default function VerifyPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-[#F4F4F8]">
+        <div className="text-center">
+          <div className="inline-block animate-spin h-8 w-8 border-4 border-[#048BA8] border-t-transparent rounded-full mb-4"></div>
+          <p className="text-[#2E4057]">Cargando...</p>
+        </div>
+      </div>
+    }>
+      <VerifyForm />
+    </Suspense>
   );
 } 

@@ -40,6 +40,12 @@ export interface PasswordReset {
 
 export type User = UserResponse;
 
+export enum UserRole {
+  ADMIN = 'admin',
+  EMPRENDEDOR = 'emprendedor',
+  CLIENTE = 'cliente'
+}
+
 export interface AuthState {
   user: User | null;
   isAuthenticated: boolean;

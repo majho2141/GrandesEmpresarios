@@ -1,6 +1,7 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import EmailStr, validator
 from sqlmodel import Field, SQLModel, Relationship
+from email_validator import validate_email, EmailNotValidError
 from .role import Role, RoleRead
 from .enterprise import Enterprise, EnterpriseRead, EnterpriseCreate
 
@@ -14,17 +15,7 @@ class UserBase(SQLModel):
     role_id: Optional[int] = Field(default=None, foreign_key="role.id", nullable=True)
     document_verified: bool = Field(default=False)
     is_active: bool = Field(default=False)
-
-    @validator('email')
-    def validate_email(cls, v):
-        if not v:
-            raise ValueError('Email cannot be empty')
-        try:
-            EmailStr.validate(v)
-        except ValueError:
-            raise ValueError('Invalid email format')
-        return v
-
+    
 class UserCreate(UserBase):
     password: str
     enterprise: Optional[EnterpriseCreate] = None
@@ -46,29 +37,11 @@ class UserUpdate(SQLModel):
     document_verified: Optional[bool] = None
     is_active: Optional[bool] = None
 
-    @validator('email')
-    def validate_email(cls, v):
-        if v is not None:
-            try:
-                EmailStr.validate(v)
-            except ValueError:
-                raise ValueError('Invalid email format')
-        return v
 
 # Modelo para autenticación
 class UserLogin(SQLModel):
     email: str
     password: str
-
-    @validator('email')
-    def validate_email(cls, v):
-        if not v:
-            raise ValueError('Email cannot be empty')
-        try:
-            EmailStr.validate(v)
-        except ValueError:
-            raise ValueError('Invalid email format')
-        return v
 
 # Modelo para token
 class Token(SQLModel):
@@ -80,4 +53,9 @@ class User(UserBase, table=True):
     password: str
     role: Optional[Role] = Relationship(back_populates="users")
     enterprise: Optional[Enterprise] = Relationship()
+    ads: List["AdGenerated"] = Relationship(back_populates="user")
+
+
+from src.models.ad import AdGenerated  # solo al final
+
 

@@ -5,12 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { useAlert } from '@/context/AlertContext';
 import { authService } from '@/services/api/auth.service';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 
 const resetPasswordSchema = z.object({
   password: z.string()
@@ -32,11 +32,9 @@ interface PasswordRequirement {
   met: boolean;
 }
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { showAlert } = useAlert();
-  const token = searchParams.get('token');
   const [password, setPassword] = useState('');
   const [requirements, setRequirements] = useState<PasswordRequirement[]>([
     { regex: /.{8,}/, text: 'Mínimo 8 caracteres', met: false },
@@ -44,6 +42,11 @@ export default function ResetPasswordPage() {
     { regex: /[0-9]/, text: 'Al menos un número', met: false },
     { regex: /[^A-Za-z0-9]/, text: 'Al menos un carácter especial', met: false },
   ]);
+  
+  // Importamos useSearchParams dentro del componente cliente que está dentro de Suspense
+  const { useSearchParams } = require('next/navigation');
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
 
   useEffect(() => {
     if (!token) {
@@ -218,5 +221,20 @@ export default function ResetPasswordPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-[#F4F4F8]">
+        <div className="text-center">
+          <div className="inline-block animate-spin h-8 w-8 border-4 border-[#048BA8] border-t-transparent rounded-full mb-4"></div>
+          <p className="text-[#2E4057]">Cargando...</p>
+        </div>
+      </div>
+    }>
+      <ResetPasswordForm />
+    </Suspense>
   );
 } 

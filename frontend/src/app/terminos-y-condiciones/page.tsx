@@ -2,7 +2,7 @@
 
 export default function TermsAndConditionsPage() {
   return (
-    <div className="min-h-screen bg-[#F4F4F8]">
+    <div className="min-h-screen bg-[#F4F4F8] mt-16">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-[#2E4057] to-[#048BA8] text-white py-12">
         <div className="container mx-auto px-4">

@@ -1,6 +1,6 @@
 import api from './axios';
 import { USER_ENDPOINTS } from '@/constants/endpoints';
-import { UserRole } from '@/store/useAuthStore';
+import { UserRole } from '@/types/auth';
 
 interface UserProfile {
   id: string;

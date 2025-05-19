@@ -1,35 +1,63 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import DashboardHeader from '@/components/layout/DashboardHeader';
+import { FaShoppingCart, FaMapMarkerAlt, FaCreditCard, FaCheckCircle } from 'react-icons/fa';
 
 export default function ConfirmacionPago() {
   return (
     <div className="min-h-screen bg-[#F4F4F8]">
-      {/* Encabezado de página */}
-      <div className="bg-[#2E4057] text-white p-6">
-        <div className="container mx-auto">
-          <h1 className="text-3xl font-bold">Confirmación de Compra</h1>
-          <div className="flex items-center mt-2">
-            <Link href="/cliente/dashboard" className="text-[#F4F4F8] hover:text-[#F18F01]">
-              Dashboard
-            </Link>
-            <span className="mx-2">/</span>
-            <Link href="/cliente/carrito" className="text-[#F4F4F8] hover:text-[#F18F01]">
-              Carrito
-            </Link>
-            <span className="mx-2">/</span>
-            <Link href="/cliente/pago" className="text-[#F4F4F8] hover:text-[#F18F01]">
-              Pago
-            </Link>
-            <span className="mx-2">/</span>
-            <span>Confirmación</span>
-          </div>
-        </div>
-      </div>
+      {/* Navbar */}
+      <DashboardHeader titulo="Confirmación de Compra" rol="cliente" />
 
       {/* Contenido principal */}
       <div className="container mx-auto py-8 px-4">
-        <div className="max-w-3xl mx-auto bg-white rounded-lg shadow p-8">
+        {/* Stepper */}
+        <div className="flex justify-center mb-10">
+          <div className="w-full max-w-4xl">
+            <div className="relative flex items-center justify-between">
+              {/* Líneas de conexión */}
+              <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 h-1 bg-gray-200 z-0"></div>
+              <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 h-1 bg-[#048BA8] z-0" style={{ width: '100%' }}></div>
+              
+              {/* Paso 1: Carrito */}
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-12 h-12 rounded-full bg-[#048BA8] text-white flex items-center justify-center shadow-md transition-all">
+                  <FaShoppingCart className="w-5 h-5" />
+                </div>
+                <div className="mt-3 text-sm font-medium text-[#2E4057]">Revisar Carrito</div>
+              </div>
+              
+              {/* Paso 2: Dirección */}
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-12 h-12 rounded-full bg-[#048BA8] text-white flex items-center justify-center shadow-md transition-all">
+                  <FaMapMarkerAlt className="w-5 h-5" />
+                </div>
+                <div className="mt-3 text-sm font-medium text-[#2E4057]">Dirección de Envío</div>
+              </div>
+              
+              {/* Paso 3: Pago */}
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-12 h-12 rounded-full bg-[#048BA8] text-white flex items-center justify-center shadow-md transition-all">
+                  <FaCreditCard className="w-5 h-5" />
+                </div>
+                <div className="mt-3 text-sm font-medium text-[#2E4057]">Método de Pago</div>
+              </div>
+              
+              {/* Paso 4: Confirmación (actual) */}
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-12 h-12 rounded-full bg-[#048BA8] text-white flex items-center justify-center shadow-md transition-all ring-4 ring-blue-100">
+                  <FaCheckCircle className="w-5 h-5" />
+                </div>
+                <div className="mt-3 text-sm font-semibold text-[#048BA8]">Confirmar Orden</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-sm border border-gray-100 p-8 transition-all hover:shadow-md">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#99C24D] text-white mb-4">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -123,7 +151,7 @@ export default function ConfirmacionPago() {
 
           <div className="border-t border-gray-200 pt-6 mb-8">
             <h3 className="text-lg font-bold text-[#2E4057] mb-4">Dirección de Envío</h3>
-            <div className="bg-gray-50 p-4 rounded-md">
+            <div className="bg-gray-50 p-4 rounded-md border border-gray-100">
               <p className="font-medium">Juan Pérez</p>
               <p className="text-gray-600">Calle Principal 123</p>
               <p className="text-gray-600">Colonia Centro</p>
@@ -155,12 +183,12 @@ export default function ConfirmacionPago() {
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
               href="/cliente/dashboard" 
-              className="bg-[#048BA8] hover:bg-[#037897] text-white py-2 px-6 rounded-md text-center"
+              className="bg-[#048BA8] hover:bg-[#037897] text-white py-2 px-6 rounded-md text-center transition-all"
             >
               Volver al Dashboard
             </Link>
             <button 
-              className="bg-[#2E4057] hover:bg-[#1e2c3a] text-white py-2 px-6 rounded-md flex items-center justify-center"
+              className="bg-[#2E4057] hover:bg-[#1e2c3a] text-white py-2 px-6 rounded-md flex items-center justify-center transition-all"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />

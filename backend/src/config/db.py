@@ -18,6 +18,7 @@ def init_db():
     from src.models.permission_has_role import PermissionHasRole
     from src.models.product import Product, Category
     from src.utils.init_roles import initialize_default_roles
+    from src.utils.initialize_sample_data import initialize_sample_data
     
     # Crear todas las tablas
     SQLModel.metadata.create_all(engine)
@@ -26,6 +27,7 @@ def init_db():
     with Session(engine) as session:
         initialize_default_roles(session)
         add_address_column(session)
+        initialize_sample_data(session)
 
 def get_session():
     with Session(engine) as session:

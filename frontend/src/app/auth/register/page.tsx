@@ -146,7 +146,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-[#F4F4F8]">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-[#F4F4F8] mt-16">
       <div className="max-w-2xl w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
         <div className="flex flex-col items-center">
           <Link href="/" className="transform transition-all duration-300 hover:scale-105">

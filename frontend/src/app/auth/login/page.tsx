@@ -7,188 +7,158 @@ import * as z from 'zod';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
 import { useAlert } from '@/context/AlertContext';
 import { useAuthStore } from '@/store/useAuthStore';
 import { authService } from '@/services/api/auth.service';
-import { Alert } from '@/components/ui/Alert';
 
+// Esquema de validación con zod
 const loginSchema = z.object({
-  email: z.string().email('Correo electrónico inválido'),
+  email: z.string().email('Email inválido'),
   password: z.string().min(1, 'La contraseña es requerida'),
 });
 
-type LoginFormData = z.infer<typeof loginSchema>;
+// Tipo para nuestro formulario
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
   const { showAlert } = useAlert();
   const { setUser, setToken } = useAuthStore();
-  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Configuración de react-hook-form con zod
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<LoginFormData>({
+    formState: { errors },
+  } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
-      password: ''
+      password: '',
     },
-    mode: 'onBlur',
-    reValidateMode: 'onChange'
   });
 
-  const onSubmit = async (data: LoginFormData) => {
+  // Función que se ejecutará cuando el formulario sea válido
+  const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     
     try {
+      // Autenticar usuario
       const response = await authService.login(data.email, data.password);
-      // Guardamos el token
+      
+      // Guardar token
       localStorage.setItem('token', response.access_token);
-      // Configuramos el token en el estado global
       setToken(response.access_token);
       
-      // Obtenemos la información del usuario
+      // Obtener perfil de usuario
       const userProfile = await authService.getCurrentUser();
-      // Actualizamos el estado global con la información del usuario
       setUser(userProfile);
       
+      // Mostrar mensaje de éxito
       showAlert('success', '¡Inicio de sesión exitoso!');
-      router.push('/profile'); // Redirigimos al perfil
+      
+      // Retraso breve antes de redireccionar
+      setTimeout(() => {
+        router.push('/profile');
+      }, 500);
     } catch (error) {
-      // Mostrar el mensaje de error
+      console.error('Error de autenticación:', error);
       showAlert('error', 'Credenciales inválidas. Por favor, intenta nuevamente.');
-      console.error('Error al iniciar sesión:', error);
     } finally {
       setIsLoading(false);
-    }
-    
-    // No devolvemos nada para evitar cualquier comportamiento predeterminado adicional
-  };
-
-  const handleGoogleLogin = async () => {
-    try {
-      // TODO: Implementar login con Google
-      showAlert('info', 'Login con Google aún no implementado');
-    } catch (error) {
-      showAlert('error', 'Error al iniciar sesión con Google');
-      console.error('Error con Google login:', error);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-[#F4F4F8]">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
-        <div className="flex flex-col items-center">
-          <Link href="/" className="transform transition-all duration-300 hover:scale-105">
+    <div className="min-h-screen flex items-center justify-center bg-[#F4F4F8] p-4">
+      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        {/* Logo */}
+        <div className="flex justify-center mb-6">
+          <Link href="/">
             <Image
               src="/logoSecundario.png"
               alt="EmpreTech Logo"
               width={180}
               height={60}
-              className="mb-8 drop-shadow-md"
+              priority
+              className="drop-shadow-md"
             />
           </Link>
-          <h2 className="text-center text-3xl font-montserrat font-bold text-[#048BA8] mb-3">
-            Iniciar Sesión
-          </h2>
-          <p className="text-center text-base font-opensans text-[#2E4057]/80">
-            ¿No tienes una cuenta?{' '}
-            <Link 
-              href="/auth/register" 
-              className="text-[#048BA8] hover:text-[#048BA8]/80 font-semibold transition-colors duration-300"
-            >
-              Regístrate aquí
-            </Link>
-          </p>
         </div>
-
-        {error && (
-          <div className="mt-4 p-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg">
-            {error}
-          </div>
-        )}
-
-        <form 
-          className="mt-8 space-y-6" 
-          onSubmit={(e) => {
-            e.preventDefault(); // Previene explícitamente la recarga
-            handleSubmit(onSubmit)(e);
-          }} 
-          noValidate
-        >
+        
+        <h1 className="text-2xl font-bold text-center mb-6 text-[#048BA8]">
+          Iniciar Sesión
+        </h1>
+        
+        {/* Formulario con react-hook-form */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
+            <label className="block text-[#2E4057] font-medium mb-2">
               Correo electrónico
             </label>
-            <Input
-              id="email"
+            <input
+              {...register('email')}
               type="email"
               autoComplete="email"
-              {...register('email')}
-              error={errors.email?.message}
-              className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057]"
+              placeholder="tu@correo.com"
+              className="w-full p-3 border border-[#E1E1E8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#048BA8] text-[#2E4057]"
+              disabled={isLoading}
             />
+            {errors.email && (
+              <p className="mt-1 text-red-500 text-sm">{errors.email.message}</p>
+            )}
           </div>
-
+          
           <div>
-            <label htmlFor="password" className="block text-sm font-opensans text-[#2E4057]/90 mb-2 font-medium">
+            <label className="block text-[#2E4057] font-medium mb-2">
               Contraseña
             </label>
-            <Input
-              id="password"
+            <input
+              {...register('password')}
               type="password"
               autoComplete="current-password"
-              {...register('password')}
-              error={errors.password?.message}
-              className="border-[#E1E1E8] focus:border-[#048BA8] text-[#2E4057]"
+              placeholder="••••••••"
+              className="w-full p-3 border border-[#E1E1E8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#048BA8] text-[#2E4057]"
+              disabled={isLoading}
             />
+            {errors.password && (
+              <p className="mt-1 text-red-500 text-sm">{errors.password.message}</p>
+            )}
           </div>
-
-          <div className="flex items-center justify-end">
-            <Link
-              href="/auth/forgot-password"
-              className="text-sm font-opensans text-[#048BA8] hover:text-[#048BA8]/80 transition-colors duration-300"
-            >
+          
+          <div className="flex justify-end">
+            <Link href="/auth/forgot-password" className="text-[#048BA8] text-sm hover:underline">
               ¿Olvidaste tu contraseña?
             </Link>
           </div>
-
-          <Button 
-            type="button" 
-            fullWidth 
-            onClick={(e) => {
-              e.preventDefault();
-              handleSubmit(onSubmit)(e);
-            }}
+          
+          <button
+            type="submit"
             disabled={isLoading}
-            className="bg-[#F18F01] hover:bg-[#F18F01]/90 text-white font-semibold py-3 transition-all duration-300 hover:shadow-lg"
+            className="w-full bg-[#F18F01] hover:bg-[#F18F01]/90 text-white p-3 rounded-lg font-semibold transition-colors shadow hover:shadow-md cursor-pointer"
           >
             {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
-          </Button>
-
-          <div className="relative">
+          </button>
+          
+          {/* Separador */}
+          <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[#E1E1E8]" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-[#2E4057]/60 font-opensans">
+              <span className="px-4 bg-white text-[#2E4057]/60">
                 O continúa con
               </span>
             </div>
           </div>
-
-          <Button
+          
+          {/* Botón Google */}
+          <button
             type="button"
-            variant="outline"
-            fullWidth
-            onClick={handleGoogleLogin}
+            onClick={() => showAlert('info', 'Login con Google aún no implementado')}
             disabled={isLoading}
-            className="bg-white border-[#E1E1E8] text-[#2E4057] font-semibold py-3 transition-all duration-300 hover:bg-white hover:border-[#E1E1E8]"
+            className="w-full flex items-center justify-center bg-white border border-[#E1E1E8] p-3 rounded-lg text-[#2E4057] font-semibold hover:bg-gray-50 transition-colors cursor-pointer"
           >
             <svg 
               className="w-5 h-5 mr-2" 
@@ -213,8 +183,17 @@ export default function LoginPage() {
               />
             </svg>
             Continuar con Google
-          </Button>
+          </button>
         </form>
+        
+        <div className="mt-6 text-center">
+          <p className="text-[#2E4057]">
+            ¿No tienes una cuenta?{' '}
+            <Link href="/auth/register" className="text-[#048BA8] font-semibold hover:underline">
+              Regístrate aquí
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

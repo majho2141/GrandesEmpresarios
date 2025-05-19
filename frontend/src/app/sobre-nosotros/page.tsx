@@ -1,29 +1,41 @@
 import Image from 'next/image';
+import { PageHeader } from '@/components/layout/PageHeader';
+import { Button } from '@/components/ui/Button';
+import Link from 'next/link';
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-[#F4F4F8]">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-[#2E4057] to-[#048BA8] text-white py-12">
-        <div className="container mx-auto px-4">
-          <h1 className="font-montserrat text-4xl md:text-5xl font-bold mb-4">
-            Sobre EmpreTech
-          </h1>
-          <p className="font-opensans text-lg text-white/90 max-w-2xl">
-            Impulsando el crecimiento de emprendedores tecnológicos en Colombia a través de una plataforma integral de comercio y colaboración.
-          </p>
-        </div>
-      </section>
+      {/* Header mejorado */}
+      <PageHeader 
+        title="Sobre EmpreTech"
+        description="Impulsando el crecimiento de emprendedores tecnológicos en Colombia a través de una plataforma integral de comercio y colaboración."
+        backgroundImage="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop"
+        overlayColor="from-[#2E4057]/95 to-[#048BA8]/90"
+        breadcrumbs={[
+          { label: 'Inicio', link: '/' },
+          { label: 'Sobre Nosotros' }
+        ]}
+        size="large"
+        actions={
+          <Link href="/contacto">
+            <Button className="bg-white text-[#2E4057] hover:bg-white/90 px-6 py-2.5">
+              Contactar con nuestro equipo
+            </Button>
+          </Link>
+        }
+      />
 
       <div className="container mx-auto px-4 py-12">
         {/* Nuestra Misión */}
         <section className="bg-white rounded-xl shadow-sm border border-[#E1E1E8] p-8 md:p-12 grid md:grid-cols-2 gap-12 items-center mb-12">
           <div className="relative h-[400px] rounded-xl overflow-hidden">
             <Image
-              src="/about/mission.jpg"
+              src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop"
               alt="Nuestra Misión"
               fill
               className="object-cover transition-transform duration-300 hover:scale-105"
+              unoptimized
             />
           </div>
           <div>

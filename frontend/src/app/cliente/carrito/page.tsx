@@ -1,30 +1,66 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import DashboardHeader from '@/components/layout/DashboardHeader';
+import { FaShoppingCart, FaMapMarkerAlt, FaCreditCard, FaCheckCircle } from 'react-icons/fa';
 
 export default function Carrito() {
   return (
     <div className="min-h-screen bg-[#F4F4F8]">
-      {/* Encabezado de página */}
-      <div className="bg-[#2E4057] text-white p-6">
-        <div className="container mx-auto">
-          <h1 className="text-3xl font-bold">Carrito de Compras</h1>
-          <div className="flex items-center mt-2">
-            <Link href="/cliente/dashboard" className="text-[#F4F4F8] hover:text-[#F18F01]">
-              Dashboard
-            </Link>
-            <span className="mx-2">/</span>
-            <span>Carrito</span>
-          </div>
-        </div>
-      </div>
+      {/* Navbar */}
+      <DashboardHeader titulo="Carrito de Compras" rol="cliente" />
 
       {/* Contenido principal */}
       <div className="container mx-auto py-8 px-4">
+        {/* Stepper */}
+        <div className="flex justify-center mb-10">
+          <div className="w-full max-w-4xl">
+            <div className="relative flex items-center justify-between">
+              {/* Líneas de conexión */}
+              <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 h-1 bg-gray-200 z-0"></div>
+              <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 h-1 bg-[#048BA8] z-0" style={{ width: '0%' }}></div>
+              
+              {/* Paso 1: Carrito (actual) */}
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-12 h-12 rounded-full bg-[#048BA8] text-white flex items-center justify-center shadow-md transition-all ring-4 ring-blue-100">
+                  <FaShoppingCart className="w-5 h-5" />
+                </div>
+                <div className="mt-3 text-sm font-semibold text-[#048BA8]">Revisar Carrito</div>
+              </div>
+              
+              {/* Paso 2: Dirección */}
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-12 h-12 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center shadow-sm transition-all">
+                  <FaMapMarkerAlt className="w-5 h-5" />
+                </div>
+                <div className="mt-3 text-sm font-medium text-gray-400">Dirección de Envío</div>
+              </div>
+              
+              {/* Paso 3: Pago */}
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-12 h-12 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center shadow-sm transition-all">
+                  <FaCreditCard className="w-5 h-5" />
+                </div>
+                <div className="mt-3 text-sm font-medium text-gray-400">Método de Pago</div>
+              </div>
+              
+              {/* Paso 4: Confirmación */}
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-12 h-12 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center shadow-sm transition-all">
+                  <FaCheckCircle className="w-5 h-5" />
+                </div>
+                <div className="mt-3 text-sm font-medium text-gray-400">Confirmar Orden</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Productos en el carrito */}
           <div className="lg:w-2/3">
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden transition-all hover:shadow-md">
               <div className="p-6 border-b">
                 <h2 className="text-2xl font-bold text-[#2E4057]">Productos en tu carrito (3)</h2>
               </div>
@@ -147,7 +183,7 @@ export default function Carrito() {
           
           {/* Resumen del pedido */}
           <div className="lg:w-1/3">
-            <div className="bg-white rounded-lg shadow p-6 sticky top-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 sticky top-4 transition-all hover:shadow-md">
               <h2 className="text-xl font-bold text-[#2E4057] mb-4">Resumen del pedido</h2>
               
               <div className="space-y-3 mb-6">
@@ -187,8 +223,8 @@ export default function Carrito() {
               
               <div>
                 <Link 
-                  href="/cliente/pago" 
-                  className="bg-[#F18F01] hover:bg-[#e07c01] text-white font-semibold py-3 px-4 rounded w-full block text-center"
+                  href="/cliente/direccion" 
+                  className="bg-[#F18F01] hover:bg-[#e07c01] text-white font-semibold py-3 px-4 rounded-md w-full block text-center transition-all"
                 >
                   Proceder al pago
                 </Link>

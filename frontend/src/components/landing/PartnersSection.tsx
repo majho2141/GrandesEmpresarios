@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 const partners = [
   {
     name: 'TechCorp',
-    logo: '/empresa1.png',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/512px-Microsoft_logo_%282012%29.svg.png',
     testimonial: 'EmpreTech ha sido fundamental en nuestro crecimiento digital. Su plataforma nos permitió llegar a nuevos clientes y expandir nuestro negocio.',
     author: 'María González',
     role: 'CEO',
@@ -19,7 +19,7 @@ const partners = [
   },
   {
     name: 'InnovaSoft',
-    logo: '/empresa2.png',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/488px-Apple_logo_black.svg.png',
     testimonial: 'La facilidad de uso y el soporte excepcional hacen de EmpreTech la mejor plataforma para emprendedores tecnológicos.',
     author: 'Carlos Rodríguez',
     role: 'Fundador',
@@ -32,7 +32,7 @@ const partners = [
   },
   {
     name: 'DigiServ',
-    logo: '/empresa3.png',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/IBM_logo.svg/800px-IBM_logo.svg.png',
     testimonial: 'Gracias a EmpreTech, pudimos digitalizar nuestros servicios y aumentar nuestra presencia en el mercado tecnológico.',
     author: 'Ana Martínez',
     role: 'Directora de Innovación',
@@ -43,6 +43,16 @@ const partners = [
       </svg>
     )
   }
+];
+
+// Logos adicionales de empresas reconocidas
+const additionalLogos = [
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/368px-Google_2015_logo.svg.png',
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/603px-Amazon_logo.svg.png',
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/799px-Netflix_2015_logo.svg.png',
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Oracle_logo.svg/512px-Oracle_logo.svg.png',
+  'https://cdn.worldvectorlogo.com/logos/salesforce-2.svg',
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Facebook_logo_%28square%29.png/480px-Facebook_logo_%28square%29.png'
 ];
 
 export const PartnersSection = () => {
@@ -76,6 +86,7 @@ export const PartnersSection = () => {
                       alt={partner.name}
                       fill
                       className="object-contain"
+                      unoptimized
                     />
                   </div>
                   {partner.icon}
@@ -107,14 +118,15 @@ export const PartnersSection = () => {
           <h3 className="font-montserrat text-2xl font-semibold text-[#2E4057] mb-12">
             Más Empresas que Usan EmpreTech
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center opacity-60">
-            {[1, 2, 3, 4, 5, 6].map((num) => (
-              <div key={num} className="relative h-12 grayscale hover:grayscale-0 transition-all duration-300">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center opacity-60">
+            {additionalLogos.map((logo, index) => (
+              <div key={index} className="relative h-12 grayscale hover:grayscale-0 transition-all duration-300">
                 <Image
-                  src={`/logos/partner${num}.png`}
-                  alt={`Partner Logo ${num}`}
+                  src={logo}
+                  alt={`Partner Logo ${index + 1}`}
                   fill
                   className="object-contain"
+                  unoptimized
                 />
               </div>
             ))}

@@ -56,7 +56,7 @@ export default function VentasEmprendedor() {
               id="filtroEstado"
               value={filtroEstado}
               onChange={(e) => setFiltroEstado(e.target.value)}
-              className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
+              className="border border-gray-300 rounded-md p-2 w-full text-[#2E4057] focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
             >
               <option value="todos">Todos</option>
               <option value="pendiente">Pendiente</option>
@@ -74,7 +74,7 @@ export default function VentasEmprendedor() {
               id="fechaInicio"
               value={fechaInicio}
               onChange={(e) => setFechaInicio(e.target.value)}
-              className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
+              className="border border-gray-300 rounded-md p-2 w-full text-[#2E4057] focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
             />
           </div>
           
@@ -85,7 +85,7 @@ export default function VentasEmprendedor() {
               id="fechaFin"
               value={fechaFin}
               onChange={(e) => setFechaFin(e.target.value)}
-              className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
+              className="border border-gray-300 rounded-md p-2 w-full text-[#2E4057] focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
             />
           </div>
           
@@ -97,7 +97,7 @@ export default function VentasEmprendedor() {
               placeholder="Nº Pedido o Cliente"
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
-              className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
+              className="border border-gray-300 rounded-md p-2 w-full text-[#2E4057] focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
             />
           </div>
         </div>

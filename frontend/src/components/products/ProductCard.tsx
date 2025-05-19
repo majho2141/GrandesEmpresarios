@@ -3,6 +3,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/Button';
 import { Product } from '@/services/api/product.service';
 import Link from 'next/link';
+import { useMemo } from 'react';
+
 
 interface ProductCardProps {
   product: Product;
@@ -25,20 +27,16 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     ? public_price - (public_price * (discount / 100)) 
     : public_price;
 
-  // Imagen por defecto si no hay thumbnail
-  const imageUrl = thumbnail && thumbnail !== 'Thumbnail' 
-    ? thumbnail 
-    : '/products/default-product.jpg';
-
   return (
     <Card className="group h-full flex flex-col bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
       <div className="relative w-full pt-[75%] overflow-hidden rounded-t-xl">
         <Image
-          src={imageUrl}
+          src={thumbnail}
           alt={name}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         

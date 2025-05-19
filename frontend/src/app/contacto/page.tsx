@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { PageHeader } from '@/components/layout/PageHeader';
 
 const contactSchema = z.object({
   nombre: z.string().min(3, 'El nombre debe tener al menos 3 caracteres'),
@@ -37,17 +38,18 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-[#F4F4F8]">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-[#2E4057] to-[#048BA8] text-white py-12">
-        <div className="container mx-auto px-4">
-          <h1 className="font-montserrat text-4xl md:text-5xl font-bold mb-4">
-            Contáctanos
-          </h1>
-          <p className="font-opensans text-lg text-white/90 max-w-2xl">
-            Estamos aquí para ayudarte. Envíanos un mensaje y te responderemos lo antes posible.
-          </p>
-        </div>
-      </section>
+      {/* Header mejorado */}
+      <PageHeader 
+        title="Contáctanos"
+        description="Estamos aquí para ayudarte. Envíanos un mensaje y te responderemos lo antes posible."
+        backgroundImage="https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&w=2070&auto=format&fit=crop"
+        overlayColor="from-[#048BA8]/95 to-[#2E4057]/95"
+        breadcrumbs={[
+          { label: 'Inicio', link: '/' },
+          { label: 'Contacto' }
+        ]}
+        size="medium"
+      />
 
       {/* Content Section */}
       <div className="container mx-auto px-4 py-12">

@@ -180,7 +180,7 @@ export default function ProfilePage() {
   // Mostrar pantalla de carga mientras se verifica la sesión
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F4F4F8]">
+      <div className="flex min-h-screen items-center justify-center bg-[#F4F4F8] pt-16">
         <div className="text-center">
           <div className="w-16 h-16 border-t-4 border-b-4 border-[#048BA8] rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-[#2E4057] font-medium">Cargando...</p>
@@ -195,7 +195,7 @@ export default function ProfilePage() {
 
   // Renderizamos el perfil solo si userData existe
   return (
-    <div className="min-h-screen bg-[#F4F4F8]">
+    <div className="min-h-screen bg-[#F4F4F8] pt-20">
       
       {userData && (
         <div className="container mx-auto px-4 py-12">
@@ -232,7 +232,7 @@ export default function ProfilePage() {
                 
                 <button
                   onClick={() => setIsEditing(!isEditing)}
-                  className="w-full bg-[#048BA8] text-white font-semibold py-2 px-4 rounded-lg hover:bg-[#048BA8]/90 transition-colors"
+                  className="w-full bg-[#048BA8] text-white font-semibold py-2 px-4 rounded-lg hover:bg-[#048BA8]/90 transition-colors cursor-pointer"
                 >
                   {isEditing ? 'Cancelar Edición' : 'Editar Perfil'}
                 </button>
@@ -263,7 +263,7 @@ export default function ProfilePage() {
                 </div>    
                 <button
                   onClick={handleLogout}
-                  className="w-full mt-4 bg-white border border-[#E1E1E8] text-[#2E4057] font-semibold py-2 px-4 rounded-lg hover:border-[#048BA8] transition-colors"
+                  className="w-full mt-4 bg-white border border-[#E1E1E8] text-[#2E4057] font-semibold py-2 px-4 rounded-lg hover:border-[#048BA8] transition-colors cursor-pointer"
                 >
                   Cerrar Sesión
                 </button>
@@ -349,13 +349,13 @@ export default function ProfilePage() {
                   <div className="mt-6 flex justify-end gap-4">
                     <button
                       onClick={() => setIsEditing(false)}
-                      className="px-6 py-2 border border-[#E1E1E8] text-[#2E4057] rounded-lg hover:border-[#048BA8] transition-colors"
+                      className="px-6 py-2 border border-[#E1E1E8] text-[#2E4057] rounded-lg hover:border-[#048BA8] transition-colors cursor-pointer"
                     >
                       Cancelar
                     </button>
                     <button
                       onClick={handleSaveChanges}
-                      className="px-6 py-2 bg-[#048BA8] text-white rounded-lg hover:bg-[#048BA8]/90 transition-colors"
+                      className="px-6 py-2 bg-[#048BA8] text-white rounded-lg hover:bg-[#048BA8]/90 transition-colors cursor-pointer"
                     >
                       Guardar Cambios
                     </button>
@@ -451,7 +451,7 @@ export default function ProfilePage() {
                     </p>
                     <button
                       onClick={() => setIsChangingPassword(true)}
-                      className="bg-white border border-[#048BA8] text-[#048BA8] font-semibold py-2 px-4 rounded-lg hover:bg-[#048BA8] hover:text-white transition-colors"
+                      className="bg-white border border-[#048BA8] text-[#048BA8] font-semibold py-2 px-4 rounded-lg hover:bg-[#048BA8] hover:text-white transition-colors cursor-pointer"
                     >
                       Cambiar Contraseña
                     </button>
@@ -522,7 +522,7 @@ export default function ProfilePage() {
                       <button
                         onClick={handlePasswordChange}
                         disabled={!requirements.every(req => req.met) || !passwordsMatch || !passwordData.currentPassword}
-                        className="flex-1 bg-[#048BA8] text-white font-semibold py-3 px-6 rounded-lg hover:bg-[#048BA8]/90 transition-colors disabled:bg-[#E1E1E8] disabled:cursor-not-allowed"
+                        className="flex-1 bg-[#048BA8] text-white font-semibold py-3 px-6 rounded-lg hover:bg-[#048BA8]/90 transition-colors disabled:bg-[#E1E1E8] disabled:cursor-not-allowed cursor-pointer"
                       >
                         Guardar Nueva Contraseña
                       </button>
@@ -535,7 +535,7 @@ export default function ProfilePage() {
                             confirmPassword: ''
                           });
                         }}
-                        className="flex-1 bg-white border border-[#E1E1E8] text-[#2E4057] font-semibold py-3 px-6 rounded-lg hover:border-[#048BA8] transition-colors"
+                        className="flex-1 bg-white border border-[#E1E1E8] text-[#2E4057] font-semibold py-3 px-6 rounded-lg hover:border-[#048BA8] transition-colors cursor-pointer"
                       >
                         Cancelar
                       </button>
@@ -554,7 +554,7 @@ export default function ProfilePage() {
                 </p>
                 <button
                   onClick={handleDeactivateAccount}
-                  className="w-full md:w-auto bg-white border border-red-200 text-red-600 font-semibold py-2 px-4 rounded-lg hover:bg-red-50 transition-colors"
+                  className="w-full md:w-auto bg-white border border-red-200 text-red-600 font-semibold py-2 px-4 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
                 >
                   Desactivar Cuenta
                 </button>

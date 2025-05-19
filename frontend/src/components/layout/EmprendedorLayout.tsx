@@ -2,7 +2,7 @@
 
 import React, { useState, ReactNode } from 'react';
 import EmprendedorSidebar from './EmprendedorSidebar';
-import EmprendedorHeader from './EmprendedorHeader';
+import DashboardHeader from './DashboardHeader';
 
 interface EmprendedorLayoutProps {
   children: ReactNode;
@@ -21,7 +21,7 @@ export default function EmprendedorLayout({ children, titulo }: EmprendedorLayou
       <EmprendedorSidebar menuColapsado={menuColapsado} toggleMenu={toggleMenu} />
       
       <div className="flex-1 flex flex-col overflow-hidden">
-        <EmprendedorHeader titulo={titulo} />
+        <DashboardHeader titulo={titulo} rol="emprendedor" />
         
         <main className="flex-1 overflow-y-auto p-6">
           {children}

@@ -42,7 +42,6 @@ async def create_product(
 @router.get("/products/{product_id}", response_model=ProductRead)
 async def get_product(
     product_id: int,
-    current_user: Annotated[User, Depends(get_current_user)],
     session: SessionDep
 ):
     """
@@ -52,13 +51,6 @@ async def get_product(
     product = crud.get_product(session=session, product_id=product_id)
     if not product:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
-    
-    if not check_product_access(current_user, product.enterprise_id):
-        raise HTTPException(
-            status_code=403,
-            detail="No tienes permiso para ver este producto"
-        )
-    
     return product
 
 @router.get("/products/enterprise/{enterprise_id}", response_model=List[ProductRead])

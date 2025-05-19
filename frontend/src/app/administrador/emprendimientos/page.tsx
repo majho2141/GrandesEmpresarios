@@ -1,116 +1,198 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 
 // Datos de ejemplo para emprendimientos
 const emprendimientosIniciales = [
-  { 
-    id: 1, 
-    nombre: 'Eco Soluciones', 
-    tipo: 'Tecnología Limpia', 
-    fecha: '2023-08-15', 
+  {
+    id: 1,
+    nombre: 'Eco Soluciones',
+    propietario: 'María López',
+    email: 'maria@ecosoluciones.com',
+    telefono: '+57 315 123 4567',
+    categoria: 'Sostenibilidad',
+    fechaCreacion: '2023-05-15',
     estado: 'activo',
-    ventas: 25600,
-    productos: 12
+    descripcion: 'Productos eco-amigables para el hogar y oficina, enfocados en reducir el impacto ambiental.',
+    productos: 24,
+    ventas: 156,
+    ubicacion: 'Bogotá, Colombia',
+    imagen: '/emprendimientos/eco-soluciones.jpg'
   },
-  { 
-    id: 2, 
-    nombre: 'Artesanías Locales', 
-    tipo: 'Artesanía', 
-    fecha: '2023-07-22', 
+  {
+    id: 2,
+    nombre: 'TechMakers',
+    propietario: 'Carlos Rodríguez',
+    email: 'carlos@techmakers.com',
+    telefono: '+57 300 987 6543',
+    categoria: 'Tecnología',
+    fechaCreacion: '2023-06-20',
     estado: 'activo',
-    ventas: 8900,
-    productos: 45
+    descripcion: 'Accesorios tecnológicos innovadores y personalizables para dispositivos móviles y computadoras.',
+    productos: 36,
+    ventas: 287,
+    ubicacion: 'Medellín, Colombia',
+    imagen: '/emprendimientos/tech-makers.jpg'
   },
-  { 
-    id: 3, 
-    nombre: 'TechMakers', 
-    tipo: 'Desarrollo Software', 
-    fecha: '2023-09-01', 
+  {
+    id: 3,
+    nombre: 'Artesanías Locales',
+    propietario: 'Ana García',
+    email: 'ana@artesaniaslocales.com',
+    telefono: '+57 321 456 7890',
+    categoria: 'Artesanía',
+    fechaCreacion: '2023-04-10',
+    estado: 'activo',
+    descripcion: 'Artesanías tradicionales colombianas elaboradas por comunidades indígenas y artesanos locales.',
+    productos: 48,
+    ventas: 132,
+    ubicacion: 'Cartagena, Colombia',
+    imagen: '/emprendimientos/artesanias-locales.jpg'
+  },
+  {
+    id: 4,
+    nombre: 'Moda Sustentable',
+    propietario: 'Laura Martínez',
+    email: 'laura@modasustentable.com',
+    telefono: '+57 311 234 5678',
+    categoria: 'Moda',
+    fechaCreacion: '2023-07-05',
+    estado: 'pendiente',
+    descripcion: 'Ropa y accesorios fabricados con materiales reciclados y procesos de producción sostenibles.',
+    productos: 18,
+    ventas: 0,
+    ubicacion: 'Cali, Colombia',
+    imagen: '/emprendimientos/moda-sustentable.jpg'
+  },
+  {
+    id: 5,
+    nombre: 'FinTech Solutions',
+    propietario: 'Roberto Fernández',
+    email: 'roberto@fintechsolutions.com',
+    telefono: '+57 305 678 1234',
+    categoria: 'Finanzas',
+    fechaCreacion: '2023-03-15',
     estado: 'inactivo',
-    ventas: 0,
-    productos: 3
+    descripcion: 'Soluciones financieras digitales para emprendedores y pequeñas empresas.',
+    productos: 5,
+    ventas: 42,
+    ubicacion: 'Barranquilla, Colombia',
+    imagen: '/emprendimientos/fintech-solutions.jpg'
   },
-  { 
-    id: 4, 
-    nombre: 'Gastro Fusion', 
-    tipo: 'Alimentación', 
-    fecha: '2023-10-05', 
-    estado: 'pendiente',
-    ventas: 0,
-    productos: 0
-  },
-  { 
-    id: 5, 
-    nombre: 'Moda Sustentable', 
-    tipo: 'Textil', 
-    fecha: '2023-09-18', 
+  {
+    id: 6,
+    nombre: 'Sabores Ancestrales',
+    propietario: 'Pedro Sánchez',
+    email: 'pedro@saboresancestrales.com',
+    telefono: '+57 318 765 4321',
+    categoria: 'Alimentos',
+    fechaCreacion: '2023-08-01',
     estado: 'activo',
-    ventas: 12300,
-    productos: 27
+    descripcion: 'Alimentos preparados con recetas tradicionales colombianas y productos orgánicos locales.',
+    productos: 32,
+    ventas: 98,
+    ubicacion: 'Bucaramanga, Colombia',
+    imagen: '/emprendimientos/sabores-ancestrales.jpg'
   },
-  { 
-    id: 6, 
-    nombre: 'EduTech', 
-    tipo: 'Educación', 
-    fecha: '2023-11-02', 
-    estado: 'pendiente',
-    ventas: 0,
-    productos: 0
-  },
-  { 
-    id: 7, 
-    nombre: 'Agro Innovación', 
-    tipo: 'Agricultura', 
-    fecha: '2023-08-30', 
+  {
+    id: 7,
+    nombre: 'Educa Digital',
+    propietario: 'Carmen Díaz',
+    email: 'carmen@educadigital.com',
+    telefono: '+57 304 321 7654',
+    categoria: 'Educación',
+    fechaCreacion: '2023-09-10',
     estado: 'activo',
-    ventas: 18500,
-    productos: 8
-  },
-  { 
-    id: 8, 
-    nombre: 'FinTech Solutions', 
-    tipo: 'Servicios Financieros', 
-    fecha: '2023-10-15', 
-    estado: 'activo',
-    ventas: 32100,
-    productos: 5
-  },
+    descripcion: 'Herramientas educativas digitales para niños y jóvenes, enfocadas en ciencia y tecnología.',
+    productos: 15,
+    ventas: 64,
+    ubicacion: 'Pereira, Colombia',
+    imagen: '/emprendimientos/educa-digital.jpg'
+  }
 ];
 
-export default function GestionEmprendimientos() {
+export default function EmprendimientosPage() {
   const [emprendimientos, setEmprendimientos] = useState(emprendimientosIniciales);
+  const [filtroCategoria, setFiltroCategoria] = useState('todas');
   const [filtroEstado, setFiltroEstado] = useState('todos');
   const [filtroBusqueda, setFiltroBusqueda] = useState('');
   const [emprendimientoSeleccionado, setEmprendimientoSeleccionado] = useState<number | null>(null);
-  const [menuColapsado, setMenuColapsado] = useState(false);
-  
+  const [modoEdicion, setModoEdicion] = useState(false);
+  const [modoCreacion, setModoCreacion] = useState(false);
+  const [paginaActual, setPaginaActual] = useState(1);
+  const elementosPorPagina = 5;
+
   // Filtrar emprendimientos según criterios
   const emprendimientosFiltrados = emprendimientos.filter(emp => {
+    const coincideCategoria = filtroCategoria === 'todas' || emp.categoria === filtroCategoria;
     const coincideEstado = filtroEstado === 'todos' || emp.estado === filtroEstado;
     const coincideBusqueda = emp.nombre.toLowerCase().includes(filtroBusqueda.toLowerCase()) || 
-                           emp.tipo.toLowerCase().includes(filtroBusqueda.toLowerCase());
-    return coincideEstado && coincideBusqueda;
+                             emp.propietario.toLowerCase().includes(filtroBusqueda.toLowerCase()) ||
+                             emp.descripcion.toLowerCase().includes(filtroBusqueda.toLowerCase());
+    return coincideCategoria && coincideEstado && coincideBusqueda;
   });
   
-  // Cambiar estado de un emprendimiento
-  const cambiarEstado = (id: number, nuevoEstado: string) => {
-    setEmprendimientos(emprendimientos.map(emp => 
-      emp.id === id ? { ...emp, estado: nuevoEstado } : emp
-    ));
-  };
+  // Calcular el total de páginas
+  const totalPaginas = Math.ceil(emprendimientosFiltrados.length / elementosPorPagina);
   
+  // Obtener los emprendimientos de la página actual
+  const emprendimientosPaginados = emprendimientosFiltrados.slice(
+    (paginaActual - 1) * elementosPorPagina,
+    paginaActual * elementosPorPagina
+  );
+
   // Ver detalles de un emprendimiento
   const verDetalles = (id: number) => {
     setEmprendimientoSeleccionado(id);
+    setModoEdicion(false);
   };
-  
+
   // Cerrar modal de detalles
   const cerrarDetalles = () => {
     setEmprendimientoSeleccionado(null);
+    setModoEdicion(false);
   };
-  
+
+  // Iniciar edición de emprendimiento
+  const iniciarEdicion = (id: number) => {
+    setEmprendimientoSeleccionado(id);
+    setModoEdicion(true);
+  };
+
+  // Iniciar creación de nuevo emprendimiento
+  const iniciarCreacion = () => {
+    setModoCreacion(true);
+  };
+
+  // Guardar cambios de emprendimiento (edición o creación)
+  const guardarEmprendimiento = (emprendimiento: any) => {
+    if (modoEdicion && emprendimientoSeleccionado) {
+      // Actualizar emprendimiento existente
+      setEmprendimientos(
+        emprendimientos.map(emp => emp.id === emprendimientoSeleccionado ? emprendimiento : emp)
+      );
+      setEmprendimientoSeleccionado(null);
+      setModoEdicion(false);
+    } else if (modoCreacion) {
+      // Crear nuevo emprendimiento
+      const nuevoId = Math.max(...emprendimientos.map(emp => emp.id)) + 1;
+      setEmprendimientos([...emprendimientos, { ...emprendimiento, id: nuevoId }]);
+      setModoCreacion(false);
+    }
+  };
+
+  // Eliminar emprendimiento
+  const eliminarEmprendimiento = (id: number) => {
+    setEmprendimientos(emprendimientos.filter(emp => emp.id !== id));
+    setEmprendimientoSeleccionado(null);
+  };
+
+  // Cambiar página
+  const cambiarPagina = (pagina: number) => {
+    setPaginaActual(pagina);
+  };
+
   // Renderizar estado con color correspondiente
   const renderEstado = (estado: string) => {
     switch(estado) {
@@ -125,280 +207,375 @@ export default function GestionEmprendimientos() {
     }
   };
 
-  // Toggle para el menú lateral
-  const toggleMenu = () => {
-    setMenuColapsado(!menuColapsado);
-  };
-
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <div className={`bg-[#2E4057] text-white transition-all duration-300 ${menuColapsado ? 'w-20' : 'w-64'}`}>
-        <div className="flex items-center justify-between p-4 border-b border-[#048BA8]/30">
-          {!menuColapsado && (
-            <h2 className="text-xl font-semibold">Panel Admin</h2>
-          )}
-          <button onClick={toggleMenu} className="p-2 rounded-md hover:bg-[#048BA8]/20">
-            {menuColapsado ? (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-              </svg>
-            )}
+    <DashboardLayout titulo="Gestión de Emprendimientos" rol="administrador">
+      <div className="bg-white rounded-xl shadow-sm p-6 border border-[#E1E1E8]">
+        {/* Cabecera y botón de creación */}
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold text-[#2E4057]">Emprendimientos</h2>
+          <button 
+            onClick={iniciarCreacion}
+            className="px-4 py-2 bg-[#048BA8] text-white rounded-md hover:bg-[#036d84] transition-colors"
+          >
+            + Nuevo Emprendimiento
           </button>
         </div>
-        
-        <nav className="mt-6">
-          <div className="px-4 py-2">
-            <Link href="/administrador/dashboard" className="flex items-center p-3 rounded-lg hover:bg-[#048BA8]/20 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-              </svg>
-              {!menuColapsado && <span className="ml-4">Dashboard</span>}
-            </Link>
-          </div>
-          
-          <div className="px-4 py-2">
-            <Link href="/administrador/emprendimientos" className="flex items-center p-3 rounded-lg bg-[#048BA8] text-white">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              {!menuColapsado && <span className="ml-4">Emprendimientos</span>}
-            </Link>
-          </div>
-          
-          <div className="px-4 py-2">
-            <Link href="/administrador/usuarios" className="flex items-center p-3 rounded-lg hover:bg-[#048BA8]/20 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-              {!menuColapsado && <span className="ml-4">Usuarios</span>}
-            </Link>
-          </div>
-          
-          <div className="px-4 py-2">
-            <Link href="/administrador/roles" className="flex items-center p-3 rounded-lg hover:bg-[#048BA8]/20 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              {!menuColapsado && <span className="ml-4">Roles</span>}
-            </Link>
-          </div>
-          
-          <div className="px-4 py-2">
-            <Link href="/administrador/facturacion" className="flex items-center p-3 rounded-lg hover:bg-[#048BA8]/20 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
-              {!menuColapsado && <span className="ml-4">Facturación</span>}
-            </Link>
-          </div>
-        </nav>
-        
-        <div className="absolute bottom-0 w-full border-t border-[#048BA8]/30 p-4">
-          <Link href="/" className="flex items-center p-3 rounded-lg hover:bg-[#048BA8]/20 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            {!menuColapsado && <span className="ml-4">Cerrar Sesión</span>}
-          </Link>
-        </div>
-      </div>
 
-      {/* Contenido principal */}
-      <div className="flex-1 overflow-y-auto">
-        <header className="bg-white border-b border-gray-200 p-6 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-[#2E4057]">Gestión de Emprendimientos</h1>
-          <div className="flex items-center space-x-4">
-            <button className="p-2 rounded-full hover:bg-gray-100">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-            </button>
-            <div className="h-8 w-8 rounded-full bg-[#048BA8] text-white flex items-center justify-center">
-              <span className="font-semibold">A</span>
-            </div>
-          </div>
-        </header>
-
-        <main className="p-6">
-          {/* Filtros y búsqueda */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div>
-                <label htmlFor="filtroEstado" className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-                <select
-                  id="filtroEstado"
-                  value={filtroEstado}
-                  onChange={(e) => setFiltroEstado(e.target.value)}
-                  className="border border-gray-300 rounded-md p-2 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
-                >
-                  <option value="todos">Todos</option>
-                  <option value="activo">Activo</option>
-                  <option value="inactivo">Inactivo</option>
-                  <option value="pendiente">Pendiente</option>
-                </select>
-              </div>
-              
-              <div>
-                <label htmlFor="busqueda" className="block text-sm font-medium text-gray-700 mb-1">Buscar</label>
-                <input
-                  type="text"
-                  id="busqueda"
-                  placeholder="Nombre o tipo de negocio"
-                  value={filtroBusqueda}
-                  onChange={(e) => setFiltroBusqueda(e.target.value)}
-                  className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
-                />
-              </div>
-            </div>
-            
+        {/* Filtros y búsqueda */}
+        <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
+          <div className="flex flex-col md:flex-row gap-4">
             <div>
-              <button className="bg-[#048BA8] text-white px-4 py-2 rounded-md hover:bg-[#036d84] transition-colors">
-                Exportar Datos
-              </button>
+              <label htmlFor="filtroCategoria" className="block text-sm font-medium text-[#2E4057]/70 mb-1">Categoría</label>
+              <select
+                id="filtroCategoria"
+                value={filtroCategoria}
+                onChange={(e) => setFiltroCategoria(e.target.value)}
+                className="w-full rounded-lg border border-[#E1E1E8] p-2 text-sm text-[#2E4057] focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
+              >
+                <option value="todas">Todas</option>
+                <option value="Sostenibilidad">Sostenibilidad</option>
+                <option value="Tecnología">Tecnología</option>
+                <option value="Artesanía">Artesanía</option>
+                <option value="Moda">Moda</option>
+                <option value="Finanzas">Finanzas</option>
+                <option value="Alimentos">Alimentos</option>
+                <option value="Educación">Educación</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="filtroEstado" className="block text-sm font-medium text-[#2E4057]/70 mb-1">Estado</label>
+              <select
+                id="filtroEstado"
+                value={filtroEstado}
+                onChange={(e) => setFiltroEstado(e.target.value)}
+                className="w-full rounded-lg border border-[#E1E1E8] p-2 text-sm text-[#2E4057] focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
+              >
+                <option value="todos">Todos</option>
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+                <option value="pendiente">Pendiente</option>
+              </select>
             </div>
           </div>
-          
-          {/* Tabla de emprendimientos */}
-          <div className="bg-white shadow-md rounded-lg overflow-hidden mb-8">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Nombre
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Tipo
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Fecha Registro
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Estado
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Ventas
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Productos
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Acciones
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {emprendimientosFiltrados.map((emp) => (
-                    <tr key={emp.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {emp.nombre}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {emp.tipo}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {emp.fecha}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {renderEstado(emp.estado)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        ${emp.ventas.toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {emp.productos}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button
-                          onClick={() => verDetalles(emp.id)}
-                          className="text-[#048BA8] hover:text-[#036d84] mr-3"
-                        >
-                          Ver
-                        </button>
-                        {emp.estado === 'pendiente' && (
-                          <button
-                            onClick={() => cambiarEstado(emp.id, 'activo')}
-                            className="text-green-600 hover:text-green-900 mr-3"
-                          >
-                            Aprobar
-                          </button>
-                        )}
-                        {emp.estado !== 'inactivo' && emp.estado !== 'pendiente' && (
-                          <button
-                            onClick={() => cambiarEstado(emp.id, 'inactivo')}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            Desactivar
-                          </button>
-                        )}
-                        {emp.estado === 'inactivo' && (
-                          <button
-                            onClick={() => cambiarEstado(emp.id, 'activo')}
-                            className="text-green-600 hover:text-green-900"
-                          >
-                            Activar
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div className="w-full md:w-64">
+            <label htmlFor="busqueda" className="block text-sm font-medium text-[#2E4057]/70 mb-1">Buscar</label>
+            <div className="relative">
+              <input
+                type="text"
+                id="busqueda"
+                placeholder="Nombre, propietario..."
+                value={filtroBusqueda}
+                onChange={(e) => setFiltroBusqueda(e.target.value)}
+                className="w-full rounded-lg border border-[#E1E1E8] p-2 pr-8 text-sm text-[#2E4057] focus:outline-none focus:ring-2 focus:ring-[#048BA8]"
+              />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 absolute right-3 top-3 text-[#2E4057]/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
             </div>
           </div>
-          
-          {/* Modal de detalles (si hay un emprendimiento seleccionado) */}
-          {emprendimientoSeleccionado !== null && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                <div className="p-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold text-[#2E4057]">
-                      Detalles del Emprendimiento
-                    </h2>
-                    <button
-                      onClick={cerrarDetalles}
-                      className="text-gray-400 hover:text-gray-500"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                  
-                  {/* Contenido del detalle */}
-                  <div className="space-y-4">
-                    {/* Aquí iría la información detallada del emprendimiento */}
-                    <p className="text-gray-500">ID: {emprendimientoSeleccionado}</p>
-                    <p className="text-gray-500">
-                      Información completa del emprendimiento seleccionado.
-                    </p>
-                    
-                    <div className="mt-6 flex justify-end space-x-3">
-                      <button
-                        onClick={cerrarDetalles}
-                        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                      >
-                        Cerrar
-                      </button>
-                      <button
-                        className="px-4 py-2 bg-[#048BA8] text-white rounded-md hover:bg-[#036d84]"
-                      >
-                        Editar
-                      </button>
+        </div>
+
+        {/* Tabla de emprendimientos */}
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-[#E1E1E8]">
+            <thead>
+              <tr className="bg-[#F4F4F8]">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-[#2E4057]/70 uppercase tracking-wider">ID</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-[#2E4057]/70 uppercase tracking-wider">Emprendimiento</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-[#2E4057]/70 uppercase tracking-wider">Propietario</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-[#2E4057]/70 uppercase tracking-wider">Categoría</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-[#2E4057]/70 uppercase tracking-wider">Productos</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-[#2E4057]/70 uppercase tracking-wider">Estado</th>
+                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-[#2E4057]/70 uppercase tracking-wider">Acciones</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-[#E1E1E8]">
+              {emprendimientosPaginados.map((emprendimiento) => (
+                <tr key={emprendimiento.id} className="hover:bg-[#F4F4F8] transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#2E4057]">#{emprendimiento.id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="h-10 w-10 flex-shrink-0 bg-[#048BA8]/10 rounded-full flex items-center justify-center text-[#048BA8]">
+                        {emprendimiento.nombre.charAt(0)}
+                      </div>
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-[#2E4057]">{emprendimiento.nombre}</div>
+                        <div className="text-sm text-[#2E4057]/70">{new Date(emprendimiento.fechaCreacion).toLocaleDateString()}</div>
+                      </div>
                     </div>
-                  </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#2E4057]">{emprendimiento.propietario}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#048BA8]/10 text-[#048BA8]">
+                      {emprendimiento.categoria}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#2E4057]">{emprendimiento.productos}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{renderEstado(emprendimiento.estado)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button 
+                      onClick={() => verDetalles(emprendimiento.id)}
+                      className="text-[#048BA8] hover:text-[#036d84] transition-colors mr-3"
+                    >
+                      Ver
+                    </button>
+                    <button 
+                      onClick={() => iniciarEdicion(emprendimiento.id)}
+                      className="text-[#F18F01] hover:text-[#d17e01] transition-colors mr-3"
+                    >
+                      Editar
+                    </button>
+                    <button 
+                      onClick={() => eliminarEmprendimiento(emprendimiento.id)}
+                      className="text-red-500 hover:text-red-700 transition-colors"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Paginación */}
+        {totalPaginas > 1 && (
+          <div className="flex justify-center mt-6">
+            <nav className="inline-flex rounded-md shadow-sm isolate">
+              <button
+                onClick={() => cambiarPagina(Math.max(1, paginaActual - 1))}
+                disabled={paginaActual === 1}
+                className={`relative inline-flex items-center px-3 py-2 text-sm font-medium rounded-l-md ${
+                  paginaActual === 1
+                    ? 'bg-[#F4F4F8] text-[#2E4057]/40 cursor-not-allowed'
+                    : 'bg-white text-[#2E4057] hover:bg-[#F4F4F8] cursor-pointer'
+                } border border-[#E1E1E8]`}
+              >
+                Anterior
+              </button>
+              {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((pagina) => (
+                <button
+                  key={pagina}
+                  onClick={() => cambiarPagina(pagina)}
+                  className={`relative inline-flex items-center px-3 py-2 text-sm font-medium ${
+                    paginaActual === pagina
+                      ? 'bg-[#048BA8] text-white z-10'
+                      : 'bg-white text-[#2E4057] hover:bg-[#F4F4F8]'
+                  } border border-[#E1E1E8] -ml-px`}
+                >
+                  {pagina}
+                </button>
+              ))}
+              <button
+                onClick={() => cambiarPagina(Math.min(totalPaginas, paginaActual + 1))}
+                disabled={paginaActual === totalPaginas}
+                className={`relative inline-flex items-center px-3 py-2 text-sm font-medium rounded-r-md ${
+                  paginaActual === totalPaginas
+                    ? 'bg-[#F4F4F8] text-[#2E4057]/40 cursor-not-allowed'
+                    : 'bg-white text-[#2E4057] hover:bg-[#F4F4F8] cursor-pointer'
+                } border border-[#E1E1E8] -ml-px`}
+              >
+                Siguiente
+              </button>
+            </nav>
+          </div>
+        )}
+
+        {/* Modal de detalles/edición de emprendimiento */}
+        {emprendimientoSeleccionado && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                {(() => {
+                  const emprendimiento = emprendimientos.find(e => e.id === emprendimientoSeleccionado);
+                  if (!emprendimiento) return null;
+                  
+                  return (
+                    <>
+                      <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-xl font-semibold text-[#2E4057]">
+                          {modoEdicion ? 'Editar Emprendimiento' : 'Detalles del Emprendimiento'}
+                        </h3>
+                        <button onClick={cerrarDetalles} className="text-[#2E4057]/60 hover:text-[#2E4057]">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                      
+                      {/* Información del emprendimiento */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="col-span-2 flex justify-center">
+                          <div className="w-20 h-20 rounded-full bg-[#048BA8] flex items-center justify-center text-white text-2xl font-medium">
+                            {emprendimiento.nombre.charAt(0)}
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <p className="text-sm text-[#2E4057]/60">ID</p>
+                          <p className="text-[#2E4057] font-medium">#{emprendimiento.id}</p>
+                        </div>
+                        
+                        <div>
+                          <p className="text-sm text-[#2E4057]/60">Nombre</p>
+                          <p className="text-[#2E4057] font-medium">{emprendimiento.nombre}</p>
+                        </div>
+                        
+                        <div>
+                          <p className="text-sm text-[#2E4057]/60">Propietario</p>
+                          <p className="text-[#2E4057] font-medium">{emprendimiento.propietario}</p>
+                        </div>
+                        
+                        <div>
+                          <p className="text-sm text-[#2E4057]/60">Correo Electrónico</p>
+                          <p className="text-[#2E4057] font-medium">{emprendimiento.email}</p>
+                        </div>
+                        
+                        <div>
+                          <p className="text-sm text-[#2E4057]/60">Teléfono</p>
+                          <p className="text-[#2E4057] font-medium">{emprendimiento.telefono}</p>
+                        </div>
+                        
+                        <div>
+                          <p className="text-sm text-[#2E4057]/60">Categoría</p>
+                          <span className="mt-1 px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#048BA8]/10 text-[#048BA8]">
+                            {emprendimiento.categoria}
+                          </span>
+                        </div>
+                        
+                        <div>
+                          <p className="text-sm text-[#2E4057]/60">Fecha de Creación</p>
+                          <p className="text-[#2E4057] font-medium">{new Date(emprendimiento.fechaCreacion).toLocaleDateString()}</p>
+                        </div>
+                        
+                        <div>
+                          <p className="text-sm text-[#2E4057]/60">Ubicación</p>
+                          <p className="text-[#2E4057] font-medium">{emprendimiento.ubicacion}</p>
+                        </div>
+                        
+                        <div>
+                          <p className="text-sm text-[#2E4057]/60">Estado</p>
+                          <div className="mt-1">{renderEstado(emprendimiento.estado)}</div>
+                        </div>
+                        
+                        <div>
+                          <p className="text-sm text-[#2E4057]/60">Productos</p>
+                          <p className="text-[#2E4057] font-medium">{emprendimiento.productos} productos registrados</p>
+                        </div>
+                        
+                        <div>
+                          <p className="text-sm text-[#2E4057]/60">Ventas</p>
+                          <p className="text-[#2E4057] font-medium">{emprendimiento.ventas} ventas realizadas</p>
+                        </div>
+                        
+                        <div className="col-span-2">
+                          <p className="text-sm text-[#2E4057]/60">Descripción</p>
+                          <p className="text-[#2E4057] mt-1">{emprendimiento.descripcion}</p>
+                        </div>
+                      </div>
+                      
+                      {/* Botones de acción */}
+                      <div className="flex justify-end space-x-4 mt-8">
+                        <button
+                          onClick={cerrarDetalles}
+                          className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                        >
+                          {modoEdicion ? 'Cancelar' : 'Cerrar'}
+                        </button>
+                        
+                        {!modoEdicion && (
+                          <>
+                            <button
+                              onClick={() => iniciarEdicion(emprendimiento.id)}
+                              className="px-4 py-2 bg-[#F18F01] text-white rounded-md hover:bg-[#d17e01]"
+                            >
+                              Editar
+                            </button>
+                            
+                            <button
+                              onClick={() => eliminarEmprendimiento(emprendimiento.id)}
+                              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                            >
+                              Eliminar
+                            </button>
+                          </>
+                        )}
+                        
+                        {modoEdicion && (
+                          <button
+                            onClick={() => guardarEmprendimiento(emprendimiento)}
+                            className="px-4 py-2 bg-[#048BA8] text-white rounded-md hover:bg-[#036d84]"
+                          >
+                            Guardar Cambios
+                          </button>
+                        )}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal de creación de emprendimiento */}
+        {modoCreacion && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-semibold text-[#2E4057]">Nuevo Emprendimiento</h3>
+                  <button 
+                    onClick={() => setModoCreacion(false)} 
+                    className="text-[#2E4057]/60 hover:text-[#2E4057]"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                
+                <div className="text-center mb-6">
+                  <p className="text-[#2E4057]">Formulario para crear un nuevo emprendimiento</p>
+                  <p className="text-sm text-[#2E4057]/60 mt-1">Complete toda la información requerida</p>
+                </div>
+                
+                <div className="flex justify-end space-x-4 mt-8">
+                  <button
+                    onClick={() => setModoCreacion(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancelar
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      const nuevoEmprendimiento = {
+                        nombre: 'Nuevo Emprendimiento',
+                        propietario: 'Nuevo Propietario',
+                        email: 'nuevo@ejemplo.com',
+                        telefono: '+57 300 000 0000',
+                        categoria: 'Tecnología',
+                        fechaCreacion: new Date().toISOString().split('T')[0],
+                        estado: 'pendiente',
+                        descripcion: 'Descripción del nuevo emprendimiento.',
+                        productos: 0,
+                        ventas: 0,
+                        ubicacion: 'Bogotá, Colombia',
+                        imagen: '/emprendimientos/default.jpg'
+                      };
+                      guardarEmprendimiento(nuevoEmprendimiento);
+                    }}
+                    className="px-4 py-2 bg-[#048BA8] text-white rounded-md hover:bg-[#036d84]"
+                  >
+                    Crear Emprendimiento
+                  </button>
                 </div>
               </div>
             </div>
-          )}
-        </main>
+          </div>
+        )}
       </div>
-    </div>
+    </DashboardLayout>
   );
 } 

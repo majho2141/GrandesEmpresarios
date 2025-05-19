@@ -79,5 +79,3 @@ async def verify_token_endpoint(
             is_valid=False,
             message=str(e)
         )
-
-// ... existing code ... 

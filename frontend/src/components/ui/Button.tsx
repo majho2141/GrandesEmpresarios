@@ -17,16 +17,18 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
           'disabled:pointer-events-none disabled:opacity-50',
           {
-            'bg-primary text-white hover:bg-primary/90': variant === 'default',
-            'border border-input bg-background hover:bg-accent hover:text-accent-foreground': variant === 'outline',
-            'hover:bg-accent hover:text-accent-foreground': variant === 'ghost',
+            'bg-primary text-white hover:bg-primary/90 cursor-pointer': variant === 'default',
+            'border border-input bg-background hover:bg-accent hover:text-accent-foreground cursor-pointer': variant === 'outline',
+            'hover:bg-accent hover:text-accent-foreground cursor-pointer': variant === 'ghost',
             'h-9 px-4 text-sm': size === 'sm',
             'h-10 px-6 text-base': size === 'md',
             'h-11 px-8 text-lg': size === 'lg',
             'w-full': fullWidth,
           },
-          className
+          className,
+          'cursor-pointer !important'
         )}
+        style={{ cursor: 'pointer' }}
         {...props}
       />
     );
