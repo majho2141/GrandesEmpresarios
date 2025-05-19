@@ -1,8 +1,12 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from enum import Enum
 from sqlmodel import Field, SQLModel, Relationship
 from sqlalchemy import Text
+
+if TYPE_CHECKING:
+    from .social_media_account import SocialMediaAccount
+    from .advertisement import Advertisement
 
 class PostStatus(str, Enum):
     DRAFT = "DRAFT"
@@ -40,6 +44,8 @@ class SocialMediaPostUpdate(SQLModel):
     advertisement_id: Optional[int] = None
 
 class SocialMediaPost(SocialMediaPostBase, table=True):
+    __tablename__ = "socialmediapost"
+    
     id: Optional[int] = Field(default=None, primary_key=True)
     
     social_media_account: "SocialMediaAccount" = Relationship(back_populates="posts")

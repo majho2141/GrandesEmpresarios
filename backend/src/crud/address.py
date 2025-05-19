@@ -21,7 +21,8 @@ def get_user_addresses(
 ) -> List[Address]:
     query = select(Address).where(Address.user_id == user_id)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def update_address(
     db: Session, 

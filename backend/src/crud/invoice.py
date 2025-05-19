@@ -19,14 +19,16 @@ def get_invoices(
 ) -> List[Invoice]:
     query = select(Invoice)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def get_order_invoice(
     db: Session,
     order_id: int
 ) -> Optional[Invoice]:
     query = select(Invoice).where(Invoice.order_id == order_id)
-    return db.exec(query).first()
+    result = db.execute(query).first()
+    return result[0] if result else None
 
 def update_invoice(
     db: Session,

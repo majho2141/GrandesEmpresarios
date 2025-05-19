@@ -6,6 +6,7 @@ from src.models.enterprise import Enterprise
 from src.crud.base import CRUDBase
 from fastapi import HTTPException, status
 from src.crud import product_has_category as product_category_crud
+from src.models.product_has_category import ProductHasCategory, ProductHasCategoryCreate
 
 def create_product(db: Session, product: ProductCreate) -> Product:
     # Extraer las categorías del producto
@@ -28,10 +29,21 @@ def create_product(db: Session, product: ProductCreate) -> Product:
             )
         )
     
-    return db_product
+    # Cargar el producto completo con sus categorías
+    return get_product(db, db_product.id)
 
 def get_product(db: Session, product_id: int) -> Optional[Product]:
-    return db.get(Product, product_id)
+    query = select(Product).where(Product.id == product_id)
+    query = query.options(
+        selectinload(Product.enterprise),
+        selectinload(Product.categories).selectinload(ProductHasCategory.category)
+    )
+    result = db.execute(query).first()
+    if not result:
+        return None
+        
+    product = result[0]
+    return product
 
 def get_products(
     db: Session,
@@ -39,8 +51,14 @@ def get_products(
     limit: int = 100
 ) -> List[Product]:
     query = select(Product)
+    query = query.options(
+        selectinload(Product.enterprise),
+        selectinload(Product.categories).selectinload(ProductHasCategory.category)
+    )
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    products = [r[0] for r in result]
+    return products
 
 def get_enterprise_products(
     db: Session,
@@ -49,8 +67,14 @@ def get_enterprise_products(
     limit: int = 100
 ) -> List[Product]:
     query = select(Product).where(Product.enterprise_id == enterprise_id)
+    query = query.options(
+        selectinload(Product.enterprise),
+        selectinload(Product.categories).selectinload(ProductHasCategory.category)
+    )
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    products = [r[0] for r in result]
+    return products
 
 def update_product(
     db: Session,
@@ -83,8 +107,9 @@ def update_product(
     
     db.add(db_product)
     db.commit()
-    db.refresh(db_product)
-    return db_product
+    
+    # Cargar el producto completo con sus categorías
+    return get_product(db, product_id)
 
 def delete_product(db: Session, product_id: int) -> bool:
     db_product = get_product(db, product_id)
@@ -115,7 +140,7 @@ def update_product_status(
     return db_product
 
 def create_category(session: Session, category: CategoryCreate) -> Category:
-    db_category = Category.from_orm(category)
+    db_category = Category.model_validate(category)
     session.add(db_category)
     session.commit()
     session.refresh(db_category)
@@ -126,7 +151,8 @@ def get_category(session: Session, category_id: int) -> Optional[Category]:
 
 def get_all_categories(session: Session) -> List[Category]:
     statement = select(Category)
-    return session.exec(statement).all()
+    result = session.execute(statement).all()
+    return [item[0] for item in result]
 
 def update_category(session: Session, category_id: int, category: CategoryUpdate) -> Optional[Category]:
     db_category = session.get(Category, category_id)
@@ -155,16 +181,20 @@ class CRUDProduct(CRUDBase[Product, ProductCreate, ProductUpdate]):
         query = select(Product).where(Product.enterprise_id == enterprise_id)
         query = query.options(
             selectinload(Product.enterprise),
-            selectinload(Product.category)
+            selectinload(Product.categories).selectinload(ProductHasCategory.category)
         )
-        return db.exec(query).all()
+        result = db.execute(query).all()
+        products = [item[0] for item in result]
+        return products
 
     def get_all_products(self, db):
         query = select(Product)
         query = query.options(
             selectinload(Product.enterprise),
-            selectinload(Product.category)
+            selectinload(Product.categories).selectinload(ProductHasCategory.category)
         )
-        return db.exec(query).all()
+        result = db.execute(query).all()
+        products = [item[0] for item in result]
+        return products
 
 product = CRUDProduct(Product) 

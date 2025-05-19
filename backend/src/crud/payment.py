@@ -19,7 +19,8 @@ def get_payments(
 ) -> List[Payment]:
     query = select(Payment)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def get_enterprise_payments(
     db: Session,
@@ -29,7 +30,8 @@ def get_enterprise_payments(
 ) -> List[Payment]:
     query = select(Payment).where(Payment.enterprise_id == enterprise_id)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def get_advertisement_payments(
     db: Session,
@@ -39,7 +41,8 @@ def get_advertisement_payments(
 ) -> List[Payment]:
     query = select(Payment).where(Payment.advertisement_id == advertisement_id)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def get_invoice_payments(
     db: Session,
@@ -49,7 +52,8 @@ def get_invoice_payments(
 ) -> List[Payment]:
     query = select(Payment).where(Payment.invoice_id == invoice_id)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def update_payment(
     db: Session,

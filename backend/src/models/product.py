@@ -76,4 +76,9 @@ class Product(ProductBase, table=True):
     discount: float = Field(default=0.0)
     enterprise: "Enterprise" = Relationship(back_populates="products")
     order_details: List["OrderDetail"] = Relationship(back_populates="product")
-    categories: List["ProductHasCategory"] = Relationship(back_populates="product") 
+    categories: List["ProductHasCategory"] = Relationship(back_populates="product")
+    
+    @property
+    def category_list(self) -> List[Category]:
+        """Devuelve una lista de objetos Category en lugar de ProductHasCategory"""
+        return [phc.category for phc in self.categories if phc.category] 

@@ -18,7 +18,8 @@ def get_product_categories(
 ) -> List[ProductHasCategory]:
     query = select(ProductHasCategory).where(ProductHasCategory.product_id == product_id)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def get_category_products(
     db: Session,
@@ -28,39 +29,43 @@ def get_category_products(
 ) -> List[ProductHasCategory]:
     query = select(ProductHasCategory).where(ProductHasCategory.category_id == category_id)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def delete_product_category(db: Session, product_id: int, category_id: int) -> bool:
     query = select(ProductHasCategory).where(
         ProductHasCategory.product_id == product_id,
         ProductHasCategory.category_id == category_id
     )
-    product_category = db.exec(query).first()
-    if not product_category:
+    result = db.execute(query).first()
+    if not result:
         return False
     
+    product_category = result[0]
     db.delete(product_category)
     db.commit()
     return True
 
 def delete_all_product_categories(db: Session, product_id: int) -> bool:
     query = select(ProductHasCategory).where(ProductHasCategory.product_id == product_id)
-    product_categories = db.exec(query).all()
-    if not product_categories:
+    result = db.execute(query).all()
+    if not result:
         return False
     
-    for product_category in product_categories:
+    for row in result:
+        product_category = row[0]
         db.delete(product_category)
     db.commit()
     return True
 
 def delete_all_category_products(db: Session, category_id: int) -> bool:
     query = select(ProductHasCategory).where(ProductHasCategory.category_id == category_id)
-    category_products = db.exec(query).all()
-    if not category_products:
+    result = db.execute(query).all()
+    if not result:
         return False
     
-    for category_product in category_products:
+    for row in result:
+        category_product = row[0]
         db.delete(category_product)
     db.commit()
     return True 

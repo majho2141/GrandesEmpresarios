@@ -22,7 +22,8 @@ def get_user_orders(
 ) -> List[Order]:
     query = select(Order).where(Order.user_id == user_id)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def get_orders_by_status(
     db: Session,
@@ -32,7 +33,8 @@ def get_orders_by_status(
 ) -> List[Order]:
     query = select(Order).where(Order.status == status)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def update_order(
     db: Session, 

@@ -1,7 +1,11 @@
 from datetime import datetime, UTC
 from enum import Enum
-from typing import Optional
+from typing import Optional, TYPE_CHECKING, List, Any
 from sqlmodel import Field, SQLModel, Relationship
+
+# Para evitar importaciones circulares
+if TYPE_CHECKING:
+    from .user import User
 
 class NotificationType(str, Enum):
     SYSTEM = "system"

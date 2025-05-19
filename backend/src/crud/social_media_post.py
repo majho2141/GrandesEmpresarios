@@ -20,7 +20,8 @@ def get_social_media_posts(
 ) -> List[SocialMediaPost]:
     query = select(SocialMediaPost)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def get_account_social_media_posts(
     db: Session,
@@ -30,7 +31,8 @@ def get_account_social_media_posts(
 ) -> List[SocialMediaPost]:
     query = select(SocialMediaPost).where(SocialMediaPost.social_media_account_id == account_id)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def get_advertisement_social_media_posts(
     db: Session,
@@ -40,7 +42,8 @@ def get_advertisement_social_media_posts(
 ) -> List[SocialMediaPost]:
     query = select(SocialMediaPost).where(SocialMediaPost.advertisement_id == advertisement_id)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def get_scheduled_posts(
     db: Session,
@@ -52,7 +55,8 @@ def get_scheduled_posts(
         SocialMediaPost.scheduled_date > datetime.utcnow()
     )
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def update_social_media_post(
     db: Session,

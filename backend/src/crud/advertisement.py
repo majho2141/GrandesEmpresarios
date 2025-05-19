@@ -22,7 +22,8 @@ def get_enterprise_advertisements(
 ) -> List[Advertisement]:
     query = select(Advertisement).where(Advertisement.enterprise_id == enterprise_id)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def get_active_advertisements(
     db: Session,
@@ -31,7 +32,8 @@ def get_active_advertisements(
 ) -> List[Advertisement]:
     query = select(Advertisement).where(Advertisement.status == AdvertisementStatus.ACTIVE)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def update_advertisement(
     db: Session,

@@ -12,6 +12,24 @@ router = APIRouter(
     tags=["products"]
 )
 
+def adapt_product_to_schema(product: Product) -> ProductRead:
+    """
+    Adapta un modelo Product a un esquema ProductRead, 
+    usando category_list en lugar de categories
+    """
+    # Crear un diccionario con todos los atributos del producto
+    product_dict = {
+        key: getattr(product, key) 
+        for key in product.__dict__ 
+        if not key.startswith('_') and key != 'categories'
+    }
+    
+    # Añadir las categorías como objetos CategoryRead
+    product_dict['categories'] = product.category_list
+    
+    # Crear y devolver el objeto ProductRead
+    return ProductRead(**product_dict)
+
 def check_product_access(current_user: User, enterprise_id: int):
     """
     Verifica si el usuario tiene acceso al producto de la empresa
@@ -41,7 +59,8 @@ def create_product(
                 detail=f"Category with id {category_id} not found"
             )
     
-    return crud.create_product(db, product)
+    db_product = crud.create_product(db, product)
+    return adapt_product_to_schema(db_product)
 
 @router.get("/", response_model=List[ProductRead])
 def read_products(
@@ -50,7 +69,7 @@ def read_products(
     db: Session = Depends(get_session)
 ):
     products = crud.get_products(db, skip=skip, limit=limit)
-    return products
+    return [adapt_product_to_schema(product) for product in products]
 
 @router.get("/enterprise/{enterprise_id}", response_model=List[ProductRead])
 def read_enterprise_products(
@@ -65,7 +84,7 @@ def read_enterprise_products(
         raise HTTPException(status_code=403, detail="Not authorized to view this enterprise's products")
     
     products = crud.get_enterprise_products(db, enterprise_id, skip=skip, limit=limit)
-    return products
+    return [adapt_product_to_schema(product) for product in products]
 
 @router.get("/{product_id}", response_model=ProductRead)
 def read_product(
@@ -75,7 +94,7 @@ def read_product(
     product = crud.get_product(db, product_id)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
-    return product
+    return adapt_product_to_schema(product)
 
 @router.patch("/{product_id}", response_model=ProductRead)
 def update_product(
@@ -103,7 +122,7 @@ def update_product(
                 )
     
     updated_product = crud.update_product(db, product_id, product_update)
-    return updated_product
+    return adapt_product_to_schema(updated_product)
 
 @router.delete("/{product_id}")
 def delete_product(
@@ -207,4 +226,5 @@ async def get_all_products(
     """
     Get all products in the system.
     """
-    return crud.product.get_all_products(session) 
+    products = crud.product.get_all_products(session)
+    return [adapt_product_to_schema(product) for product in products] 

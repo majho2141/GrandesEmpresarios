@@ -10,8 +10,8 @@ class Settings(BaseSettings):
     POSTGRES_SERVER: str = "db"
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"
-    POSTGRES_DB: str = "grandes_empresarios"
-    SQLALCHEMY_DATABASE_URI: str = "postgresql://postgres:postgres@db/grandes_empresarios"
+    POSTGRES_DB: str = "grandesempresarios"
+    SQLALCHEMY_DATABASE_URI: str = "postgresql://postgres:postgres@db/grandesempresarios"
 
     class Config:
         case_sensitive = True

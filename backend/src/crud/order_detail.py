@@ -21,7 +21,8 @@ def get_order_details(
 ) -> List[OrderDetail]:
     query = select(OrderDetail).where(OrderDetail.order_id == order_id)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def get_product_order_details(
     db: Session,
@@ -31,7 +32,8 @@ def get_product_order_details(
 ) -> List[OrderDetail]:
     query = select(OrderDetail).where(OrderDetail.product_id == product_id)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def update_order_detail(
     db: Session, 

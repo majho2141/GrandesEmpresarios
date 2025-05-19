@@ -1,6 +1,10 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 from sqlmodel import Field, SQLModel, Relationship
+
+if TYPE_CHECKING:
+    from .enterprise import Enterprise
+    from .social_media_post import SocialMediaPost
 
 class SocialMediaAccountBase(SQLModel):
     platform_name: str = Field(max_length=50)
@@ -26,6 +30,8 @@ class SocialMediaAccountUpdate(SQLModel):
     last_connection: Optional[datetime] = None
 
 class SocialMediaAccount(SocialMediaAccountBase, table=True):
+    __tablename__ = "socialmediaaccount"
+    
     id: Optional[int] = Field(default=None, primary_key=True)
     
     enterprise: "Enterprise" = Relationship(back_populates="social_media_accounts")

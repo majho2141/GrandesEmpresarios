@@ -4,7 +4,11 @@ from sqlmodel import Session
 
 from src.database import get_session
 from src.models.social_media_post import SocialMediaPostCreate, SocialMediaPostRead, SocialMediaPostUpdate, PostStatus
+from src.models.social_media_account import SocialMediaAccount
+from src.models.advertisement import Advertisement
 from src.crud import social_media_post as crud
+from src.crud import social_media_account as social_media_account_crud
+from src.crud import advertisement as advertisement_crud
 from src.routers.auth import get_current_user
 from src.models.user import User
 
@@ -20,7 +24,7 @@ def create_social_media_post(
     current_user: User = Depends(get_current_user)
 ):
     # Verificar que el usuario pertenece a la empresa del social media account
-    social_media_account = db.get("SocialMediaAccount", post.social_media_account_id)
+    social_media_account = social_media_account_crud.get_social_media_account(db, post.social_media_account_id)
     if not social_media_account:
         raise HTTPException(status_code=404, detail="Social media account not found")
     
@@ -47,7 +51,7 @@ def read_account_social_media_posts(
     current_user: User = Depends(get_current_user)
 ):
     # Verificar que el usuario pertenece a la empresa del social media account
-    social_media_account = db.get("SocialMediaAccount", account_id)
+    social_media_account = social_media_account_crud.get_social_media_account(db, account_id)
     if not social_media_account:
         raise HTTPException(status_code=404, detail="Social media account not found")
     
@@ -65,7 +69,7 @@ def read_advertisement_social_media_posts(
     current_user: User = Depends(get_current_user)
 ):
     # Verificar que el usuario pertenece a la empresa del anuncio
-    advertisement = db.get("Advertisement", advertisement_id)
+    advertisement = advertisement_crud.get_advertisement(db, advertisement_id)
     if not advertisement:
         raise HTTPException(status_code=404, detail="Advertisement not found")
     
@@ -81,6 +85,9 @@ def read_scheduled_posts(
     db: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ):
+    """
+    Get all scheduled posts
+    """
     return crud.get_scheduled_posts(db, skip=skip, limit=limit)
 
 @router.get("/{post_id}", response_model=SocialMediaPostRead)
@@ -94,7 +101,7 @@ def read_social_media_post(
         raise HTTPException(status_code=404, detail="Social media post not found")
     
     # Verificar que el usuario pertenece a la empresa del social media account
-    social_media_account = db.get("SocialMediaAccount", post.social_media_account_id)
+    social_media_account = social_media_account_crud.get_social_media_account(db, post.social_media_account_id)
     if social_media_account.enterprise_id != current_user.enterprise_id:
         raise HTTPException(status_code=403, detail="Not authorized to view this post")
     
@@ -112,7 +119,7 @@ def update_social_media_post(
         raise HTTPException(status_code=404, detail="Social media post not found")
     
     # Verificar que el usuario pertenece a la empresa del social media account
-    social_media_account = db.get("SocialMediaAccount", post.social_media_account_id)
+    social_media_account = social_media_account_crud.get_social_media_account(db, post.social_media_account_id)
     if social_media_account.enterprise_id != current_user.enterprise_id:
         raise HTTPException(status_code=403, detail="Not authorized to update this post")
     
@@ -130,7 +137,7 @@ def delete_social_media_post(
         raise HTTPException(status_code=404, detail="Social media post not found")
     
     # Verificar que el usuario pertenece a la empresa del social media account
-    social_media_account = db.get("SocialMediaAccount", post.social_media_account_id)
+    social_media_account = social_media_account_crud.get_social_media_account(db, post.social_media_account_id)
     if social_media_account.enterprise_id != current_user.enterprise_id:
         raise HTTPException(status_code=403, detail="Not authorized to delete this post")
     
@@ -152,7 +159,7 @@ def update_post_status(
         raise HTTPException(status_code=404, detail="Social media post not found")
     
     # Verificar que el usuario pertenece a la empresa del social media account
-    social_media_account = db.get("SocialMediaAccount", post.social_media_account_id)
+    social_media_account = social_media_account_crud.get_social_media_account(db, post.social_media_account_id)
     if social_media_account.enterprise_id != current_user.enterprise_id:
         raise HTTPException(status_code=403, detail="Not authorized to update this post's status")
     

@@ -21,7 +21,7 @@ def create_advertisement(
     current_user: User = Depends(get_current_user)
 ):
     # Verificar que el usuario pertenece a la empresa
-    enterprise = enterprise_crud.get_enterprise(db, advertisement.enterprise_id)
+    enterprise = enterprise_crud.get_enterprise_by_id(session=db, enterprise_id=advertisement.enterprise_id)
     if not enterprise:
         raise HTTPException(status_code=404, detail="Enterprise not found")
     if enterprise.id != current_user.enterprise_id:
@@ -38,7 +38,7 @@ def read_enterprise_advertisements(
     current_user: User = Depends(get_current_user)
 ):
     # Verificar que el usuario pertenece a la empresa
-    enterprise = enterprise_crud.get_enterprise(db, enterprise_id)
+    enterprise = enterprise_crud.get_enterprise_by_id(session=db, enterprise_id=enterprise_id)
     if not enterprise:
         raise HTTPException(status_code=404, detail="Enterprise not found")
     if enterprise.id != current_user.enterprise_id:

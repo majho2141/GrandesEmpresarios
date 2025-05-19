@@ -1,5 +1,5 @@
 from typing import Optional
-from sqlmodel import Session, select
+from sqlmodel import Session, select, delete
 from sqlalchemy.orm import selectinload
 from datetime import datetime, timedelta
 import random
@@ -8,6 +8,7 @@ from src.config.security import get_password_hash, verify_password
 from src.models.user import User, UserCreate, UserUpdate
 from src.models.role import Role
 from src.models.verification_code import VerificationCode
+from src.models.enterprise import Enterprise
 
 def create_user(*, session: Session, user_create: UserCreate) -> User:
     """
@@ -79,6 +80,23 @@ def delete_user(*, session: Session, document_id: str) -> bool:
     user = get_user_by_document(session=session, document_id=document_id)
     if not user:
         return False
+    
+    # Verificar si el usuario tiene una empresa asociada
+    if user.enterprise_id:
+        # Obtener la empresa
+        enterprise = session.exec(select(Enterprise).where(Enterprise.id == user.enterprise_id)).first()
+        if enterprise:
+            # Verificar si hay otros usuarios vinculados a esta empresa
+            other_users = session.exec(
+                select(User).where(
+                    User.enterprise_id == user.enterprise_id,
+                    User.document_id != document_id
+                )
+            ).all()
+            
+            # Si no hay otros usuarios vinculados, eliminar la empresa
+            if not other_users:
+                session.delete(enterprise)
     
     session.delete(user)
     session.commit()

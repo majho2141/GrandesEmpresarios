@@ -20,7 +20,8 @@ def get_social_media_accounts(
 ) -> List[SocialMediaAccount]:
     query = select(SocialMediaAccount)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def get_enterprise_social_media_accounts(
     db: Session,
@@ -30,7 +31,8 @@ def get_enterprise_social_media_accounts(
 ) -> List[SocialMediaAccount]:
     query = select(SocialMediaAccount).where(SocialMediaAccount.enterprise_id == enterprise_id)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def get_active_social_media_accounts(
     db: Session,
@@ -39,7 +41,8 @@ def get_active_social_media_accounts(
 ) -> List[SocialMediaAccount]:
     query = select(SocialMediaAccount).where(SocialMediaAccount.status == True)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def update_social_media_account(
     db: Session,

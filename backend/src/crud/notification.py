@@ -25,7 +25,8 @@ def get_user_notifications(
     if unread_only:
         query = query.where(Notification.read == False)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    result = db.execute(query)
+    return [r[0] for r in result]
 
 def update_notification(
     db: Session, 
