@@ -53,3 +53,11 @@ def verify_password_reset_token(token: str) -> str | None:
         return decoded_token["sub"]
     except pyjwt.PyJWTError:
         return None
+
+
+def verify_token(token: str):
+    try:
+        payload = pyjwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except pyjwt.PyJWTError:
+        return None

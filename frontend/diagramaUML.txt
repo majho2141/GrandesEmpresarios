@@ -1,0 +1,195 @@
+# Descripción del Diagrama UML
+
+## Clases y Atributos
+
+### User
+- document_id : varchar(20)
+- name : varchar(45)
+- email : varchar(100)
+- password : varchar(255)
+- phone_number : varchar(20)
+- role_id : int
+- enterprise_id : int
+- document_verified : boolean
+- is_active : boolean
+
+### Enterprise
+- id : int
+- name : varchar(45)
+- NIT : varchar(30)
+- email : varchar(100)
+- phone_number : varchar(20)
+- currency : varchar(20)
+- description : varchar(255)
+- address : varchar(100)
+- logo : varchar(255)
+
+### Role
+- id : int
+- name : varchar(100)
+- description : varchar(255)
+
+### Permission
+- id : int
+- name : varchar(100)
+- description : varchar(255)
+
+### Permission_has_Role
+- Permission_id : int
+- Role_id : int
+
+### Product
+- id : int
+- name : varchar(45)
+- description : varchar(255)
+- status : enum
+- stock : int
+- production_cost : double
+- public_price : double
+- thumbnail : varchar(45)
+- bar_code : varchar(45)
+- minimal_safe_stock : int
+- discount : double
+- Enterprise_id : int
+- Category_id : int
+
+### Category
+- id : int
+- name : varchar(100)
+- description : varchar(255)
+
+### Product_has_Category
+- Product_id : int
+- Category_id : int
+
+### Invoice
+- id : int
+- invoice_number : varchar(45)
+- payment_method : enum
+- total_price : double
+- creation_date : date
+- payment_date : date
+- status : enum
+- order_id : int
+
+### Payment
+- id : int
+- amount : double
+- payment_date : date
+- payment_method : enum
+- concept : varchar(255)
+- enterprise_id : int
+- advertisement_id : int
+- invoice_id : int
+
+### Order
+- id : int
+- order_date : date
+- delivery_date : date
+- status : enum
+- shipping_cost : double
+- total_amount : double
+- user_id : varchar(20)
+- address_id : int
+
+### OrderDetail
+- id : int
+- quantity : int
+- unit_price : double
+- discount : double
+- total_price : double
+- Product_id : int
+- Order_id : int
+
+### Review
+- id : int
+- rating : int
+- comment : varchar(500)
+- review_date : date
+- user_id : varchar(20)
+- product_id : int
+
+### Advertisement
+- id : int
+- title : varchar(100)
+- description : varchar(255)
+- start_date : date
+- end_date : date
+- cost : double
+- status : enum
+- enterprise_id : int
+- clicks : int
+- impressions : int
+
+### Address
+- id : int
+- street : varchar(100)
+- city : varchar(45)
+- state : varchar(45)
+- country : varchar(45)
+- postal_code : varchar(20)
+- user_id : varchar(20)
+- is_default : boolean
+
+### Notification
+- id : int
+- title : varchar(100)
+- message : varchar(500)
+- created_date : datetime
+- read : boolean
+- notification_type : enum
+- user_id : varchar(20)
+- related_id : int
+
+### SocialMediaAccount
+- id : int
+- platform_name : varchar(50)
+- account_name : varchar(100)
+- access_token : varchar(255)
+- token_expires_at : datetime
+- enterprise_id : int
+- status : boolean
+- last_connection : datetime
+
+### SocialMediaPost
+- id : int
+- content : text
+- media_url : varchar(255)
+- platform_post_id : varchar(100)
+- post_date : datetime
+- scheduled_date : datetime
+- status : enum
+- target_audience : text
+- budget : double
+- social_media_account_id : int
+- advertisement_id : int
+
+## Relaciones
+
+- **User - Role**: muchos usuarios (`*`) tienen un solo rol (`1`)
+- **User - Enterprise**: muchos usuarios (`*`) pertenecen a una empresa (`1`)
+- **User - Address**: un usuario tiene muchas direcciones (`*`)
+- **User - Order**: un usuario realiza muchos pedidos (`*`)
+- **User - Review**: un usuario puede dejar muchas reseñas (`*`)
+- **User - Notification**: un usuario recibe muchas notificaciones (`*`)
+
+- **Role - Permission**: muchos a muchos, mediante `Permission_has_Role`
+
+- **Enterprise - Product**: una empresa tiene muchos productos (`*`)
+- **Enterprise - Advertisement**: una empresa tiene muchos anuncios (`*`)
+- **Enterprise - Payment**: una empresa realiza muchos pagos (`*`)
+- **Enterprise - SocialMediaAccount**: una empresa administra varias cuentas de redes sociales (`*`)
+
+- **Product - Category**: muchos a muchos mediante `Product_has_Category`
+
+- **Order - OrderDetail**: un pedido contiene múltiples detalles (`*`)
+- **Product - OrderDetail**: un producto puede estar en muchos detalles (`*`)
+- **Product - Review**: un producto puede tener muchas reseñas (`*`)
+
+- **Invoice - Payment**: una factura puede estar asociada a un pago (`0..1`)
+- **Order - Invoice**: un pedido puede generar una factura (`0..1`)
+
+- **Advertisement - Payment**: un anuncio puede tener un pago (`0..1`)
+- **Advertisement - SocialMediaPost**: un anuncio puede estar vinculado a varias publicaciones (`*`)
+
+- **SocialMediaAccount - SocialMediaPost**: una cuenta puede tener muchas publicaciones (`*`)

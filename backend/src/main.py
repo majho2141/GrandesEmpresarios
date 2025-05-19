@@ -5,6 +5,18 @@ from fastapi.staticfiles import StaticFiles
 from src.routers.user import router as user_router
 from src.routers.role import router as role_router
 from src.routers.permission import router as permission_router
+from src.routers.product import router as product_router
+from src.routers.category import router as category_router
+from src.routers.auth import router as auth_router
+from src.routers.notification import router as notification_router
+from src.routers.address import router as address_router
+from src.routers.order import router as order_router
+from src.routers.order_detail import router as order_detail_router
+from src.routers.advertisement import router as advertisement_router
+from src.routers.invoice import router as invoice_router
+from src.routers.payment import router as payment_router
+from src.routers.social_media_account import router as social_media_account_router
+from src.routers.social_media_post import router as social_media_post_router
 from src.config.settings import settings
 from src.config.db import init_db
 from sqlmodel import SQLModel
@@ -28,9 +40,21 @@ if settings.BACKEND_CORS_ORIGINS:
 app.mount("/assets", StaticFiles(directory="src/email-templates/assets/images"), name="assets")
 
 # Include routers
-app.include_router(user_router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
+app.include_router(auth_router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
+app.include_router(user_router, prefix=f"{settings.API_V1_STR}/users", tags=["users"])
 app.include_router(role_router, prefix=f"{settings.API_V1_STR}/roles", tags=["roles"])
 app.include_router(permission_router, prefix=f"{settings.API_V1_STR}/permissions", tags=["permissions"])
+app.include_router(product_router, prefix=f"{settings.API_V1_STR}/products", tags=["products"])
+app.include_router(category_router, prefix=f"{settings.API_V1_STR}/categories", tags=["categories"])
+app.include_router(notification_router, prefix=f"{settings.API_V1_STR}/notifications", tags=["notifications"])
+app.include_router(address_router, prefix=f"{settings.API_V1_STR}/addresses", tags=["addresses"])
+app.include_router(order_router, prefix=f"{settings.API_V1_STR}/orders", tags=["orders"])
+app.include_router(order_detail_router, prefix=f"{settings.API_V1_STR}/order-details", tags=["order-details"])
+app.include_router(advertisement_router, prefix=f"{settings.API_V1_STR}/advertisements", tags=["advertisements"])
+app.include_router(invoice_router, prefix=f"{settings.API_V1_STR}/invoices", tags=["invoices"])
+app.include_router(payment_router, prefix=f"{settings.API_V1_STR}/payments", tags=["payments"])
+app.include_router(social_media_account_router, prefix=f"{settings.API_V1_STR}/social-media-accounts", tags=["social-media-accounts"])
+app.include_router(social_media_post_router, prefix=f"{settings.API_V1_STR}/social-media-posts", tags=["social-media-posts"])
 
 @app.on_event("startup")
 def on_startup():

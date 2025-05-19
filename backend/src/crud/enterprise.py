@@ -9,7 +9,9 @@ def create_enterprise(*, session: Session, enterprise: EnterpriseCreate) -> Ente
     return db_enterprise
 
 def get_enterprise_by_nit(*, session: Session, nit: str) -> Enterprise | None:
-    return session.exec(select(Enterprise).where(Enterprise.NIT == nit)).first()
+    result = session.execute(select(Enterprise).where(Enterprise.NIT == nit)).first()
+    return result[0] if result else None
 
 def get_enterprise_by_id(*, session: Session, enterprise_id: int) -> Enterprise | None:
-    return session.exec(select(Enterprise).where(Enterprise.id == enterprise_id)).first() 
+    result = session.execute(select(Enterprise).where(Enterprise.id == enterprise_id)).first()
+    return result[0] if result else None 
