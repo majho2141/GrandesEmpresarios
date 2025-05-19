@@ -13,6 +13,11 @@ from src.routers.address import router as address_router
 from src.routers.order import router as order_router
 from src.routers.order_detail import router as order_detail_router
 from src.routers.advertisement import router as advertisement_router
+from src.routers.product_has_category import router as product_has_category_router
+from src.routers.invoice import router as invoice_router
+from src.routers.payment import router as payment_router
+from src.routers.social_media_account import router as social_media_account_router
+from src.routers.social_media_post import router as social_media_post_router
 from src.config.settings import settings
 from src.config.db import init_db
 from sqlmodel import SQLModel
@@ -47,6 +52,11 @@ app.include_router(address_router, prefix=f"{settings.API_V1_STR}/addresses", ta
 app.include_router(order_router, prefix=f"{settings.API_V1_STR}/orders", tags=["orders"])
 app.include_router(order_detail_router, prefix=f"{settings.API_V1_STR}/order-details", tags=["order-details"])
 app.include_router(advertisement_router, prefix=f"{settings.API_V1_STR}/advertisements", tags=["advertisements"])
+app.include_router(product_has_category_router, prefix=f"{settings.API_V1_STR}/product-categories", tags=["product-categories"])
+app.include_router(invoice_router, prefix=f"{settings.API_V1_STR}/invoices", tags=["invoices"])
+app.include_router(payment_router, prefix=f"{settings.API_V1_STR}/payments", tags=["payments"])
+app.include_router(social_media_account_router, prefix=f"{settings.API_V1_STR}/social-media-accounts", tags=["social-media-accounts"])
+app.include_router(social_media_post_router, prefix=f"{settings.API_V1_STR}/social-media-posts", tags=["social-media-posts"])
 
 @app.on_event("startup")
 def on_startup():
