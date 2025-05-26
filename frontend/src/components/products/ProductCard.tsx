@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/Button';
 import { Product } from '@/services/api/product.service';
 import Link from 'next/link';
 import { useMemo } from 'react';
-
+import { ShoppingCart } from 'lucide-react';
+import { useCart } from '@/hooks/useCart';
 
 interface ProductCardProps {
   product: Product;
@@ -22,10 +23,22 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     discount
   } = product;
 
+  const { addToCart } = useCart();
+
   // Calcular el precio con descuento si existe
   const finalPrice = discount > 0 
     ? public_price - (public_price * (discount / 100)) 
     : public_price;
+
+  const handleAddToCart = () => {
+    try {
+      addToCart(product);
+      alert('Producto agregado al carrito');
+    } catch (error) {
+      console.error('Error al agregar al carrito:', error);
+      alert('Error al agregar el producto al carrito');
+    }
+  };
 
   return (
     <Card className="group h-full flex flex-col bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
@@ -78,8 +91,15 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           </span>
         )}
       </CardContent>
-      <CardFooter className="pt-4 border-t border-[#E1E1E8]">
-        <Link href={`/productos/${id}`} className="w-full">
+      <CardFooter className="pt-4 border-t border-[#E1E1E8] flex gap-2">
+        <Button 
+          onClick={handleAddToCart}
+          className="flex-1 bg-[#048BA8] hover:bg-[#037897] text-white transition-colors"
+        >
+          <ShoppingCart className="w-4 h-4 mr-2" />
+          Agregar
+        </Button>
+        <Link href={`/productos/${id}`} className="flex-1">
           <Button 
             variant="outline" 
             fullWidth 

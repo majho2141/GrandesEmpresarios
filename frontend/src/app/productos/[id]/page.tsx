@@ -7,6 +7,7 @@ import { productService, Product } from '@/services/api/product.service';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { ShoppingCart, Heart, Share2, ArrowLeft, Star, Package, Shield, Truck, ChevronRight, Home } from 'lucide-react';
+import { useCart } from '@/hooks/useCart';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -16,6 +17,7 @@ export default function ProductDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('descripcion');
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -37,11 +39,17 @@ export default function ProductDetailPage() {
   }, [params.id]);
 
 
-  // Funcionalidad para agregar al carrito (aquí implementarías la lógica real)
+  // Funcionalidad para agregar al carrito
   const handleAddToCart = () => {
-    console.log(`Agregando al carrito: ${product?.name}, cantidad: ${quantity}`);
-    // Aquí implementarías la lógica real
-    alert(`Producto añadido al carrito: ${product?.name} x ${quantity}`);
+    try {
+      if (product) {
+        addToCart(product, quantity);
+        alert('Producto agregado al carrito');
+      }
+    } catch (error) {
+      console.error('Error al agregar al carrito:', error);
+      alert('Error al agregar el producto al carrito');
+    }
   };
 
   if (isLoading) {
@@ -229,7 +237,7 @@ export default function ProductDetailPage() {
                       <Button 
                         fullWidth 
                         variant="outline"
-                        className="border-[#048BA8] text-[#048BA8] hover:bg-[#048BA8] hover:text-[#FFFFFF] py-6 text-lg"
+                        className="bg-white border-[#048BA8] text-[#048BA8] hover:bg-[#048BA8] hover:text-[#FFFFFF] py-6 text-lg transition-all duration-300"
                       >
                         Comprar ahora
                       </Button>

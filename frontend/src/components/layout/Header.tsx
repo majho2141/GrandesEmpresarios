@@ -16,7 +16,7 @@ export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, clearAuth } = useAuthStore();
   const profileRef = useRef<HTMLDivElement>(null);
 
   // Cerrar el menú de perfil cuando se hace clic fuera de él
@@ -48,6 +48,11 @@ export const Header = () => {
   // Determinar si el usuario es cliente (para mostrar el carrito)
   const userRole = user?.role as string | undefined;
   const isClient = userRole === 'client' || userRole === 'cliente';
+
+  const handleLogout = () => {
+    clearAuth();
+    window.location.href = '/auth/login';
+  };
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -174,10 +179,7 @@ export const Header = () => {
                       <div className="py-1 border-t border-[#E1E1E8]">
                         <button 
                           className="flex items-center w-full text-left px-4 py-2 text-sm text-[#E53E3E] hover:bg-[#F4F4F8] transition-colors"
-                          onClick={() => {
-                            // Aquí va la lógica para cerrar sesión
-                            setIsProfileOpen(false);
-                          }}
+                          onClick={handleLogout}
                         >
                           <LogOut className="w-4 h-4 mr-3" />
                           Cerrar sesión
@@ -310,10 +312,7 @@ export const Header = () => {
                 
                 <button
                   className="font-montserrat text-sm px-4 py-3 rounded-lg text-[#E53E3E] hover:bg-[#F4F4F8] transition-colors flex items-center text-left"
-                  onClick={() => {
-                    // Aquí va la lógica de cerrar sesión
-                    setIsMenuOpen(false);
-                  }}
+                  onClick={handleLogout}
                 >
                   <LogOut className="w-4 h-4 mr-3" />
                   <span>Cerrar sesión</span>

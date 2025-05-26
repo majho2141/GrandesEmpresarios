@@ -10,16 +10,25 @@ interface AuthStore {
   clearAuth: () => void;
 }
 
+// Obtener el token inicial del localStorage
+const getInitialToken = () => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('token');
+  }
+  return null;
+};
+
 export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
-  token: null,
-  isAuthenticated: false,
+  token: getInitialToken(),
+  isAuthenticated: !!getInitialToken(),
   setUser: (user) => set({ user, isAuthenticated: !!user }),
-  setToken: (token) => set({ token, isAuthenticated: !!token }),
+  setToken: (token) => {
+    localStorage.setItem('token', token);
+    set({ token, isAuthenticated: !!token });
+  },
   clearAuth: () => {
-    // Eliminar el token de localStorage
     localStorage.removeItem('token');
-    // Limpiar el estado de autenticación
     set({ user: null, token: null, isAuthenticated: false });
   },
 })); 

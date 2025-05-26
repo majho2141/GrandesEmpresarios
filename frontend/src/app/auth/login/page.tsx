@@ -60,7 +60,17 @@ export default function LoginPage() {
       
       // Retraso breve antes de redireccionar
       setTimeout(() => {
-        router.push('/profile');
+        // Redirigir según el rol del usuario
+        const userRole = userProfile.role?.name?.toLowerCase();
+        if (userRole === 'cliente' || userRole === 'client') {
+          router.push('/cliente/dashboard');
+        } else if (userRole === 'administrador' || userRole === 'admin') {
+          router.push('/administrador/dashboard');
+        } else if (userRole === 'emprendedor') {
+          router.push('/emprendedor/dashboard');
+        } else {
+          router.push('/profile');
+        }
       }, 500);
     } catch (error) {
       console.error('Error de autenticación:', error);

@@ -35,9 +35,11 @@ export default function DashboardLayout({ children, titulo, rol }: DashboardLayo
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {renderSidebar()}
+      <div className="fixed inset-y-0 left-0 z-50">
+        {renderSidebar()}
+      </div>
       
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className={`flex-1 flex flex-col overflow-hidden ${menuColapsado ? 'ml-20' : 'ml-64'} transition-all duration-300`}>
         <DashboardHeader titulo={titulo} rol={rol} />
         
         <main className="flex-1 overflow-y-auto p-6">
