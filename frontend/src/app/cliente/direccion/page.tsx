@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import DashboardHeader from '@/components/layout/DashboardHeader';
-import { FaShoppingCart, FaMapMarkerAlt, FaCreditCard, FaCheckCircle } from 'react-icons/fa';
+import { FaShoppingCart, FaMapMarker, FaCreditCard, FaCheckCircle } from 'react-icons/fa';
 
 export default function DireccionEnvio() {
   return (
@@ -32,7 +32,7 @@ export default function DireccionEnvio() {
               {/* Paso 2: Dirección (actual) */}
               <div className="relative z-10 flex flex-col items-center">
                 <div className="w-12 h-12 rounded-full bg-[#048BA8] text-white flex items-center justify-center shadow-md transition-all ring-4 ring-blue-100">
-                  <FaMapMarkerAlt className="w-5 h-5" />
+                  <FaMapMarker className="w-5 h-5" />
                 </div>
                 <div className="mt-3 text-sm font-semibold text-[#048BA8]">Dirección de Envío</div>
               </div>

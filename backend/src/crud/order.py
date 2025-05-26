@@ -77,4 +77,15 @@ def update_order_status(
     db.add(db_order)
     db.commit()
     db.refresh(db_order)
-    return db_order 
+    return db_order
+
+def get_recent_orders(
+    db: Session,
+    skip: int = 0,
+    limit: int = 10
+) -> List[Order]:
+    query = select(Order).options(selectinload(Order.order_details))
+    query = query.order_by(Order.created_at.desc())
+    query = query.offset(skip).limit(limit)
+    results = db.execute(query).scalars().all()
+    return results 

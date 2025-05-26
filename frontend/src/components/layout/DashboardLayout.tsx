@@ -10,9 +10,11 @@ interface DashboardLayoutProps {
   children: ReactNode;
   titulo: string;
   rol: 'cliente' | 'emprendedor' | 'administrador';
+  userName?: string;
+  userEmail?: string;
 }
 
-export default function DashboardLayout({ children, titulo, rol }: DashboardLayoutProps) {
+export default function DashboardLayout({ children, titulo, rol, userName, userEmail }: DashboardLayoutProps) {
   const [menuColapsado, setMenuColapsado] = useState(false);
 
   const toggleMenu = () => {
@@ -40,7 +42,12 @@ export default function DashboardLayout({ children, titulo, rol }: DashboardLayo
       </div>
       
       <div className={`flex-1 flex flex-col overflow-hidden ${menuColapsado ? 'ml-20' : 'ml-64'} transition-all duration-300`}>
-        <DashboardHeader titulo={titulo} rol={rol} />
+        <DashboardHeader 
+          titulo={titulo} 
+          rol={rol} 
+          userName={userName}
+          userEmail={userEmail}
+        />
         
         <main className="flex-1 overflow-y-auto p-6">
           {children}

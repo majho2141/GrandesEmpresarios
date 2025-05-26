@@ -99,4 +99,17 @@ def update_order_status(
         raise HTTPException(status_code=403, detail="Not authorized to update this order's status")
     
     updated_order = order_crud.update_order_status(db, order_id, new_status)
-    return updated_order 
+    return updated_order
+
+@router.get("/recent", response_model=List[OrderRead])
+def read_recent_orders(
+    skip: int = 0,
+    limit: int = 10,
+    db: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get the most recent orders. By default, returns the 10 most recent orders.
+    """
+    orders = order_crud.get_recent_orders(db, skip=skip, limit=limit)
+    return orders 

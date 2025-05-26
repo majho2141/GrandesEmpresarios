@@ -181,7 +181,7 @@ export default function ProfilePage() {
   // Mostrar pantalla de carga mientras se verifica la sesión
   if (isLoading) {
     return (
-      <DashboardLayout titulo="Perfil" rol="cliente">
+      <DashboardLayout titulo="Perfil" rol={user?.role?.name?.toLowerCase() as "cliente" | "emprendedor" | "administrador" || "cliente"}>
         <div className="flex min-h-screen items-center justify-center bg-[#F4F4F8]">
           <div className="text-center">
             <div className="w-16 h-16 border-t-4 border-b-4 border-[#048BA8] rounded-full animate-spin mx-auto mb-4"></div>
@@ -199,12 +199,21 @@ export default function ProfilePage() {
   // Mapear el rol del usuario al tipo esperado por DashboardLayout
   const getRoleType = (roleName: string | undefined): "cliente" | "emprendedor" | "administrador" => {
     if (!roleName) return "cliente";
+    
+    // Convertir a minúsculas para hacer la comparación insensible a mayúsculas
+    const normalizedRole = roleName.toLowerCase();
+    
+    // Mapeo de roles
     const roleMap: Record<string, "cliente" | "emprendedor" | "administrador"> = {
-      "Cliente": "cliente",
-      "Emprendedor": "emprendedor",
-      "Administrador": "administrador"
+      "cliente": "cliente",
+      "emprendedor": "emprendedor",
+      "administrador": "administrador",
+      "admin": "administrador",
+      "user": "cliente",
+      "business": "emprendedor"
     };
-    return roleMap[roleName] || "cliente";
+    
+    return roleMap[normalizedRole] || "cliente";
   };
 
   // Renderizamos el perfil solo si userData existe
