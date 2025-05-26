@@ -39,4 +39,9 @@ export const ENTREPRENEUR_ENDPOINTS = {
 
 export const CONTACT_ENDPOINTS = {
   SEND_MESSAGE: '/contact',
+} as const;
+
+export const AI_ENDPOINTS = {
+  GENERATE_AD_TEXT: '/ai/generate-ad',
+  GENERATE_AD_IMAGE: '/ai/generate-image',
 } as const; 
