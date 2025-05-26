@@ -2,7 +2,8 @@ from datetime import date, datetime
 from enum import Enum
 from typing import Optional, List
 from sqlmodel import Field, SQLModel, Relationship
-
+from pydantic import ConfigDict
+from .order_detail import OrderDetailRead
 class OrderStatus(str, Enum):
     PENDING = "pending"
     CONFIRMED = "confirmed"
@@ -27,6 +28,10 @@ class OrderRead(OrderBase):
     id: int
     created_at: datetime
     updated_at: datetime
+
+    order_details: List[OrderDetailRead]
+    
+    model_config = ConfigDict(from_attributes=True)
 
 class OrderUpdate(SQLModel):
     delivery_date: Optional[date] = None

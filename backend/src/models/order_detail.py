@@ -23,5 +23,8 @@ class OrderDetailUpdate(SQLModel):
 
 class OrderDetail(OrderDetailBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    product: "Product" = Relationship(back_populates="order_details")
-    order: "Order" = Relationship(back_populates="order_details") 
+    order_id: int = Field(foreign_key="order.id")
+    product_id: int = Field(foreign_key="product.id")
+
+    order: Optional["Order"] = Relationship(back_populates="order_details")
+    product: Optional["Product"] = Relationship(back_populates="order_details")

@@ -21,7 +21,9 @@ def get_order_details(
 ) -> List[OrderDetail]:
     query = select(OrderDetail).where(OrderDetail.order_id == order_id)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    results = db.execute(query).scalars().all()
+    return results
+
 
 def get_product_order_details(
     db: Session,

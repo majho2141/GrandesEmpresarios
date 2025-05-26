@@ -72,6 +72,8 @@ class Product(ProductBase, table=True):
     bar_code: Optional[str] = Field(max_length=45, default=None)
     minimal_safe_stock: int = Field(default=0)
     discount: float = Field(default=0.0)
+
     enterprise: "Enterprise" = Relationship(back_populates="products")
     order_details: List["OrderDetail"] = Relationship(back_populates="product")
     categories: List["ProductHasCategory"] = Relationship(back_populates="product") 
+    

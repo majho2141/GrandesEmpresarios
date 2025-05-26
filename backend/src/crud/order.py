@@ -1,6 +1,7 @@
 from typing import List, Optional
 from sqlmodel import Session, select
 from datetime import date
+from sqlalchemy.orm import selectinload
 
 from ..models.order import Order, OrderCreate, OrderUpdate, OrderStatus
 
@@ -20,9 +21,10 @@ def get_user_orders(
     skip: int = 0, 
     limit: int = 100
 ) -> List[Order]:
-    query = select(Order).where(Order.user_id == user_id)
+    query = select(Order).options(selectinload(Order.order_details)).where(Order.user_id == user_id)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    results = db.execute(query).scalars().all()
+    return results
 
 def get_orders_by_status(
     db: Session,
@@ -32,7 +34,8 @@ def get_orders_by_status(
 ) -> List[Order]:
     query = select(Order).where(Order.status == status)
     query = query.offset(skip).limit(limit)
-    return list(db.exec(query))
+    results = db.execute(query).scalars().all()
+    return results
 
 def update_order(
     db: Session, 

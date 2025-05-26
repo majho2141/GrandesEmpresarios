@@ -20,6 +20,7 @@ from src.routers.invoice import router as invoice_router
 from src.routers.payment import router as payment_router
 from src.routers.social_media_account import router as social_media_account_router
 from src.routers.social_media_post import router as social_media_post_router
+from src.routers.enterprise import router as enterprise_router
 from src.config.settings import settings
 from src.config.db import init_db
 from sqlmodel import SQLModel
@@ -62,6 +63,7 @@ app.include_router(invoice_router, prefix=f"{settings.API_V1_STR}", tags=["invoi
 app.include_router(payment_router, prefix=f"{settings.API_V1_STR}", tags=["payments"])
 app.include_router(social_media_account_router, prefix=f"{settings.API_V1_STR}", tags=["social-media-accounts"])
 app.include_router(social_media_post_router, prefix=f"{settings.API_V1_STR}", tags=["social-media-posts"])
+app.include_router(enterprise_router, prefix=f"{settings.API_V1_STR}", tags=["enterprises"])
 
 @app.on_event("startup")
 def on_startup():
